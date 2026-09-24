@@ -63,17 +63,20 @@ A pure **JavaScript** study assistant for Muslim College students — powered by
 
 ## Admin Credentials
 
-There are **no admin credentials in this repository or in the deployed frontend** — by
-design. The master administrator and the changeable admin are created server-side from
-protected environment secrets and stored as bcrypt hashes in the backend database.
+There is **one fixed administrator account** (owner-approved design): username
+**Muslim College Multan** with a fixed password (`2004`). It is changeable **only by
+editing the code/configuration** — never from the panel.
 
-- To get your accounts: follow [`SETUP.md`](SETUP.md) → sections 4 (server secrets) and 5
-  (bootstrap).
-- To change the daily admin login later: Admin Panel → **Admin / Security** (the master
-  account is never changeable from the panel).
-- In **local demo mode** (`site-config.js` → `backend: 'local'`) the dashboard shows a
-  clearly-labelled, browser-only "first run" administrator form so you can try the whole
-  UI offline before connecting Supabase.
+- **Local demo mode** (`site-config.js` → `backend: 'local'`): the username + password
+  are constants in `js/backend-local.js` — change them there. The dashboard lock screen
+  is a straight login (no "create admin" form).
+- **Production (Supabase)**: the password lives in the `FIXED_ADMIN_PASS` Supabase
+  secret (username in `FIXED_ADMIN_USER`), is bcrypt-hashed into the database by
+  `bootstrap-admins`, and is never in committed files or API responses. To change it,
+  edit the secrets and re-run bootstrap (see [`SETUP.md`](SETUP.md) → section 4).
+- Since `2004` ships in the public demo code by design, treat it as a **known** password
+  and do not reuse it anywhere sensitive; if you need a stronger one, edit the constant
+  / secret (that is the "change from code" path).
 - If you find legacy hard-coded credentials in old copies inside this repo
   (`MuslimCollegeAI-main/`, `backup/`), those are deprecated leftovers and are excluded
   from deployment — see the deploy workflow cleanup step.

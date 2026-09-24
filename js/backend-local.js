@@ -17,6 +17,20 @@ const BackendLocal = (() => {
   const DB_KEY = 'mc_db_v3';
   const SESSION_HOURS = 8;
 
+  /* ============================================================
+     FIXED ADMINISTRATOR ACCOUNT
+     ------------------------------------------------------------
+     ONE account — changeable ONLY by editing this file (the code),
+     never from the admin panel. In production the same values are
+     configured server-side (Supabase secrets FIXED_ADMIN_USER /
+     FIXED_ADMIN_PASS, see SETUP.md) and hashed into the DB.
+     ============================================================ */
+  const FIXED_ADMIN_USER = 'Muslim College Multan';
+  const FIXED_ADMIN_PASS = '2004';
+  const FIXED_ADMIN_MSG = 'This administrator account is fixed (' + FIXED_ADMIN_USER +
+    ') and can only be changed by editing the code (js/backend-local.js in demo; ' +
+    'FIXED_ADMIN_USER / FIXED_ADMIN_PASS secrets in production). It cannot be changed from this panel.';
+
   /* ---------------- in-memory session (never persisted) ---------------- */
   let adminSession = null; // {username, exp, token}
   let studentSession = null; // {studentId, rollNumber, name, exp}
@@ -121,40 +135,12 @@ const BackendLocal = (() => {
 
   /* ---------------- admin auth ---------------- */
   async function adminFirstRun() {
-    const db = loadDB();
-    return { needsSetup: db.admins.length === 0 };
+    // No first-run setup: the single administrator account is fixed.
+    return { needsSetup: false };
   }
 
-  async function adminCreateFirst(username, password) {
-    if (!isNonEmpty(username) || username.length < 3) return { ok: false, error: 'Username must be at least 3 characters.' };
-    if (!password || String(password).length < 4) return { ok: false, error: 'Password must be at least 4 characters.' };
-    const uname = str(username, 60);
-    const db = loadDB();
-    if (db.admins.some((a) => a.username.toLowerCase() === uname.toLowerCase())) {
-      return { ok: false, error: 'An administrator with that username already exists.' };
-    }
-    const salt = makeSalt();
-    try {
-      const h = await hashPassword(password, salt);
-      mut((d) => {
-        d.admins.push({
-          id: uid('adm_'),
-          username: uname,
-          salt: h.salt,
-          hash: h.hash,
-          iterations: h.iterations,
-          isMaster: false,
-          createdAt: new Date().toISOString(),
-        });
-        d.auditLogs.unshift({
-          id: uid('aud_'), action: 'ADMIN_CREATED', entity: 'admin', entityId: null,
-          admin: uname, details: 'First administrator account created (local demo mode)', success: true, at: new Date().toISOString(),
-        });
-      });
-      return { ok: true };
-    } catch (e) {
-      return { ok: false, error: 'Secure hashing unavailable in this browser (WebCrypto). Please use HTTPS or a modern browser.' };
-    }
+  async function adminCreateFirst() {
+    return { ok: false, error: FIXED_ADMIN_MSG };
   }
 
   function makeToken(role, sub) {
@@ -162,35 +148,28 @@ const BackendLocal = (() => {
   }
 
   async function adminLogin(username, password) {
-    const uname = str(username, 60).toLowerCase();
+    const uname = str(username, 60);
     if (!uname || !password) return { ok: false, error: 'Enter your username and password.' };
-    const lock = checkLock('adm:' + uname);
+    const key = 'adm:' + uname.toLowerCase();
+    const lock = checkLock(key);
     if (lock.locked) return { ok: false, error: 'Too many failed attempts. Account locked for 15 minutes.' };
-    const db = loadDB();
-    const admin = db.admins.find((a) => a.username.toLowerCase() === uname);
-    if (!admin) {
-      registerFailure('adm:' + uname);
+    // The account is FIXED in the code — no DB lookup, no hash compare.
+    const userOk = uname.toLowerCase() === FIXED_ADMIN_USER.toLowerCase();
+    const passOk = String(password) === FIXED_ADMIN_PASS;
+    if (!userOk || !passOk) {
+      registerFailure(key);
       return { ok: false, error: 'Invalid username or password.' };
     }
-    try {
-      const h = await hashPassword(password, admin.salt, admin.iterations);
-      if (!safeEqual(h.hash, admin.hash)) {
-        registerFailure('adm:' + uname);
-        return { ok: false, error: 'Invalid username or password.' };
-      }
-    } catch (e) {
-      return { ok: false, error: 'Secure hashing unavailable in this browser (WebCrypto).' };
-    }
-    registerSuccess('adm:' + uname);
+    registerSuccess(key);
     adminSession = {
-      username: admin.username,
-      isMaster: !!admin.isMaster,
+      username: FIXED_ADMIN_USER,
+      isMaster: true,
       exp: Date.now() + SESSION_HOURS * 3600 * 1000,
-      token: makeToken('admin', admin.id),
+      token: makeToken('admin', 'fixed'),
     };
     return {
       ok: true,
-      user: { username: admin.username, isMaster: !!admin.isMaster, role: 'admin' },
+      user: { username: FIXED_ADMIN_USER, isMaster: true, role: 'admin' },
     };
   }
 
@@ -208,46 +187,8 @@ const BackendLocal = (() => {
     return { username: adminSession.username, isMaster: adminSession.isMaster, role: 'admin' };
   }
 
-  async function adminChangeCredentials(currentPassword, newUsername, newPassword) {
-    const s = adminSessionInfo();
-    if (!s) return { ok: false, error: 'Your session has expired. Please log in again.' };
-    const db = loadDB();
-    const admin = db.admins.find((a) => a.username.toLowerCase() === s.username.toLowerCase());
-    if (!admin) return { ok: false, error: 'Administrator record not found.' };
-    if (admin.isMaster) return { ok: false, error: 'The master administrator account cannot be changed from the panel.' };
-    const h = await hashPassword(currentPassword || '', admin.salt, admin.iterations);
-    if (!safeEqual(h.hash, admin.hash)) return { ok: false, error: 'Current password is incorrect.' };
-
-    const uname = str(newUsername, 60);
-    if (uname && uname.length < 3) return { ok: false, error: 'New username must be at least 3 characters.' };
-    if (newPassword && String(newPassword).length < 4) return { ok: false, error: 'New password must be at least 4 characters.' };
-    if (!uname && !newPassword) return { ok: false, error: 'Enter a new username and/or password.' };
-
-    const finalUsername = uname || admin.username;
-    if (
-      db.admins.some((a) => a.username.toLowerCase() === finalUsername.toLowerCase() && a.id !== admin.id)
-    ) {
-      return { ok: false, error: 'That username is already in use.' };
-    }
-
-    const salt = makeSalt();
-    const nh = await hashPassword(String(newPassword || ''), salt);
-    mut((d) => {
-      const a = d.admins.find((x) => x.id === admin.id);
-      a.username = finalUsername;
-      // Only rotate the hash when a new password was actually provided.
-      if (newPassword) {
-        a.salt = nh.salt;
-        a.hash = nh.hash;
-        a.iterations = nh.iterations;
-      }
-      d.auditLogs.unshift({
-        id: uid('aud_'), action: 'ADMIN_CREDENTIALS_CHANGED', entity: 'admin', entityId: a.id,
-        admin: finalUsername, details: 'Changeable admin credentials updated', success: true, at: new Date().toISOString(),
-      });
-    });
-    adminSession.username = finalUsername;
-    return { ok: true };
+  async function adminChangeCredentials() {
+    return { ok: false, error: FIXED_ADMIN_MSG };
   }
 
   /* ------------- student auth (roll number + PIN) ------------- */

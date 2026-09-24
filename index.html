@@ -514,10 +514,9 @@
               <!-- Admin / Security -->
               <div class="adm-sec" id="adm-sec-security">
                 <div class="sec-note">
-                  Changeable admin credentials are stored securely (hashed, server-side in production).
-                  The master credential is configured only through protected server configuration and can
-                  unlock / reset this panel if the changeable password is lost. No credentials are ever
-                  stored in this browser.
+                  There is one <strong>fixed administrator account</strong>. Its username and password are
+                  set in the code / server configuration — this panel can never change them. No credentials
+                  are ever stored in this browser.
                 </div>
                 <div class="card">
                   <div class="card-head">
@@ -525,27 +524,13 @@
                       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </div>
                     <div class="card-body">
-                      <h3>Change admin username / password</h3>
-                      <p class="card-note">The default changeable admin can update their credentials here. The master account cannot be changed from this panel.</p>
+                      <h3>Fixed administrator account</h3>
+                      <p class="card-note">Username: <strong>Muslim College Multan</strong> — fixed, with a fixed
+                        password. To change it you must edit the code: in demo mode edit
+                        <code>js/backend-local.js</code>; in production change the <code>FIXED_ADMIN_USER</code> /
+                        <code>FIXED_ADMIN_PASS</code> secrets and re-run <code>bootstrap-admins</code> (see
+                        SETUP.md). It can <strong>never</strong> be changed from this panel.</p>
                     </div>
-                  </div>
-                  <div class="form-grid">
-                    <div class="panel-field">
-                      <label class="panel-label" for="sec-current-pass">Current password</label>
-                      <input class="panel-input" id="sec-current-pass" type="password" autocomplete="off" />
-                    </div>
-                    <div class="panel-field"></div>
-                    <div class="panel-field">
-                      <label class="panel-label" for="sec-new-username">New username</label>
-                      <input class="panel-input" id="sec-new-username" type="text" autocomplete="off" />
-                    </div>
-                    <div class="panel-field">
-                      <label class="panel-label" for="sec-new-pass">New password</label>
-                      <input class="panel-input" id="sec-new-pass" type="password" autocomplete="off" />
-                    </div>
-                  </div>
-                  <div class="btn-row">
-                    <button class="btn primary sm" id="sec-change-btn" type="button">Update Credentials</button>
                   </div>
                 </div>
                 <div class="card">
@@ -555,7 +540,7 @@
                     </div>
                     <div class="card-body">
                       <h3>Session security</h3>
-                      <p class="card-note">Sessions are kept in memory with expiry, and expire on refresh. Brute-force protection locks an account after repeated failed logins. The student portal requires roll number + PIN.</p>
+                      <p class="card-note">Sessions are kept in memory with expiry, and expire on refresh. Brute-force protection locks an account after repeated failed logins. The student result portal works with batch + roll number (no login).</p>
                     </div>
                   </div>
                   <div class="btn-row">
@@ -646,27 +631,11 @@
                       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </div>
                     <div class="card-body">
-                      <h3>Change admin username / password</h3>
-                      <p class="card-note">Update the daily admin credentials (hashed &amp; stored server-side). The master credential cannot be changed from this panel.</p>
+                      <h3>Fixed administrator account</h3>
+                      <p class="card-note">One account: <strong>Muslim College Multan</strong> / fixed password.
+                        Credentials are decided in the code &amp; server configuration only (see SETUP.md) and
+                        can never be changed from this panel.</p>
                     </div>
-                  </div>
-                  <div class="form-grid">
-                    <div class="panel-field">
-                      <label class="panel-label" for="set-current-pass">Current password</label>
-                      <input class="panel-input" id="set-current-pass" type="password" autocomplete="off" />
-                    </div>
-                    <div class="panel-field"></div>
-                    <div class="panel-field">
-                      <label class="panel-label" for="set-new-username">New username</label>
-                      <input class="panel-input" id="set-new-username" type="text" autocomplete="off" />
-                    </div>
-                    <div class="panel-field">
-                      <label class="panel-label" for="set-new-pass">New password</label>
-                      <input class="panel-input" id="set-new-pass" type="password" autocomplete="off" />
-                    </div>
-                  </div>
-                  <div class="btn-row">
-                    <button class="btn primary sm" id="set-change-btn" type="button">Update Credentials</button>
                   </div>
                 </div>
                 <div class="card">

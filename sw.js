@@ -3,7 +3,7 @@
    Caches the app shell so the app installs & opens offline.
    ============================================================ */
 
-const CACHE = 'mc-study-agent-v9';
+const CACHE = 'mc-study-agent-v10';
 
 const ASSETS = [
   './',

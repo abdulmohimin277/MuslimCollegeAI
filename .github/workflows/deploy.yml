@@ -14,11 +14,14 @@
 #   MC_WEBHOOK_URL          → https://<projref>.supabase.co/functions/v1/deploy-webhook
 #   MC_WEBHOOK_SECRET       → value of DEPLOY_WEBHOOK_SECRET (same secret
 #                             configured in Supabase `supabase secrets set`)
-#   SECRET_SCAN_PATTERNS    → ALTERNATION of your REAL secret values inside
-#                             < > (e.g. "<master_pass>|<master_user>|<admin_pass>").
-#                             Kept in repo settings so the workflow file never
-#                             contains them. Without it the "Validate no secrets
-#                             are shipped" step fails the build (fail-closed).
+#   SECRET_SCAN_PATTERNS    → ALTERNATION of your REAL long random secrets
+#                             (e.g. "<gh_pat>|<webhook_secret>|<bootstrap_key>").
+#                             The fixed admin username/password is NOT included —
+#                             it ships intentionally in the demo code
+#                             (js/backend-local.js). Kept in repo settings so
+#                             the workflow file never contains them. Without it
+#                             the "Validate no secrets are shipped" step fails
+#                             the build (fail-closed).
 #
 # Repository_dispatch also supports manual runs via the Actions tab
 # ("Run workflow") — note: client_payload.deployment_id will be empty

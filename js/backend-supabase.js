@@ -120,17 +120,11 @@ const BackendSupabase = (() => {
     return { ok: false, error: 'Administrators are created server-side in Supabase mode. See SETUP.md → bootstrap-admins.' };
   }
 
-  async function adminChangeCredentials(currentPassword, newUsername, newPassword) {
-    const s = await adminSessionInfo();
-    if (!s) throw new Error('Admin session required.');
-    const data = await callFn('admin-security', {
-      op: 'change_credentials',
-      current_password: currentPassword,
-      new_username: newUsername,
-      new_password: newPassword,
-    }, adminSession.access_token);
-    adminSession.username = data.username || s.username;
-    return { ok: true };
+  async function adminChangeCredentials() {
+    // The single administrator account is FIXED — changeable only by
+    // editing server-side configuration (FIXED_ADMIN_USER/FIXED_ADMIN_PASS
+    // secrets → re-run bootstrap-admins), never from this panel.
+    return { ok: false, error: 'This administrator account is fixed and can only be changed by editing the backend code/configuration (FIXED_ADMIN_USER / FIXED_ADMIN_PASS, see SETUP.md).' };
   }
 
   async function studentLogin(roll, pin) {

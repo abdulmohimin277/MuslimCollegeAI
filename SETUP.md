@@ -59,10 +59,8 @@ frontend or firmware ever does.
 ```bash
 # Supabase Edge Function secrets — values are typed HERE, on your machine:
 supabase secrets set \
-  MASTER_ADMIN_USER="<MASTER_USERNAME>" \
-  MASTER_ADMIN_PASS="<MASTER_PASSWORD>" \
-  ADMIN_USER="<DEFAULT_ADMIN_USERNAME>" \
-  ADMIN_PASS="<DEFAULT_ADMIN_PASSWORD>" \
+  FIXED_ADMIN_USER="Muslim College Multan" \
+  FIXED_ADMIN_PASS="2004" \
   MC_BOOTSTRAP_KEY="<long-random-string>" \
   MC_JWT_SECRET="<your Supabase project JWT secret>" \
   GH_PAT="<GitHub Personal Access Token>" \
@@ -75,16 +73,17 @@ supabase secrets list
 
 | Secret | Purpose | Notes |
 | --- | --- | --- |
-| `MASTER_ADMIN_USER` / `MASTER_ADMIN_PASS` | Master administrator (root) | **Never changeable from the panel.** Bcrypt-hashed in DB. |
-| `ADMIN_USER` / `ADMIN_PASS` | Changeable daily admin | Changeable from the dashboard → *Admin/Security*. |
+| `FIXED_ADMIN_USER` | The **single** administrator username (`Muslim College Multan`) | **Never changeable from the panel** — edit the secret + re-run bootstrap. Bcrypt-hashed in DB. |
+| `FIXED_ADMIN_PASS` | The **single** administrator password (`2004`) | Same rules as the username — code/secret only. |
 | `MC_BOOTSTRAP_KEY` | Key to run `bootstrap-admins` once | Generate: `openssl rand -hex 24` |
 | `MC_JWT_SECRET` | Signs admin/student JWTs | Must equal Supabase project JWT secret (RLS compatibility). |
 | `GH_PAT` | GitHub Personal Access Token for `repository_dispatch` | `repo` + `workflow` scopes, **fine-grained**, scoped only to this repo. |
 | `GH_REPO` | `owner/repository` used by the deploy function | |
 | `DEPLOY_WEBHOOK_SECRET` | Shared secret with GitHub Actions status callback | Generate: `openssl rand -hex 24`. Same value goes in a GitHub secret (below). |
 
-**Make the master admin available:** after the functions are deployed and secrets are set,
-bootstrap the admin accounts (this can also be repeated safely — it upserts):
+**Make the fixed admin available:** after the functions are deployed and secrets are set,
+bootstrap the administrator account (this can also be repeated safely — it upserts, and it
+removes any other admin rows so only the fixed account can log in):
 
 ```bash
 curl -X POST "https://<projref>.supabase.co/functions/v1/bootstrap-admins" \
@@ -93,9 +92,10 @@ curl -X POST "https://<projref>.supabase.co/functions/v1/bootstrap-admins" \
   -d '{}'
 ```
 
-The response shows only **masked usernames + status** — raw credentials are never returned.
+The response shows only the **masked username + status** — raw credentials are never returned.
 
-> If you later change the master credentials, re-run `supabase secrets set MASTER_ADMIN_USER/PASS` **and** re-run the curl above, then **restart** the Edge Functions (or re-deploy them) so fresh secrets are loaded.
+> If you later change the fixed credentials, re-run `supabase secrets set FIXED_ADMIN_USER/FIXED_ADMIN_PASS`
+> **and** re-run the curl above, then **restart** the Edge Functions (or re-deploy them) so fresh secrets are loaded.
 
 ---
 
@@ -105,8 +105,8 @@ The response shows only **masked usernames + status** — raw credentials are ne
 2. **Add repository secrets** (*Settings → Secrets and variables → Actions → New repository secret*):
    - `MC_WEBHOOK_URL` → `https://<projref>.supabase.co/functions/v1/deploy-webhook`
    - `MC_WEBHOOK_SECRET` → the **same** value you used for `DEPLOY_WEBHOOK_SECRET`
-   - `SECRET_SCAN_PATTERNS` → an **alternation of your real secret values**, e.g. the actual value
-     you set for master/admin (`<master_pass>|<master_user>|<admin_pass>` — substitute the real strings).
+   - `SECRET_SCAN_PATTERNS` → an **alternation of your real secret values**, e.g. the actual fixed
+     username and password you set (`<fixed_user>|<fixed_password>` — substitute the real strings).
      The deploy workflow greps the artifact with this pattern and **aborts** the build on a match, so
      accidental credential commits can never be published. Keep **only** the real values in the secret;
      never paste them into any file in the repository (docs or code).
@@ -137,8 +137,9 @@ public **by design**; every admin and student operation is authorized server-sid
 
 ## 7. First login & verification
 
-1. Open the site → **Admin Panel** → log in with `ADMIN_USER` / `ADMIN_PASS`.
-2. *Admin/Security* tab → verify the master account is **greyed out** (not changeable).
+1. Open the site → **Admin Panel** → log in with `FIXED_ADMIN_USER` / `FIXED_ADMIN_PASS`.
+2. *Admin/Security* tab → confirm the **Fixed administrator account** card (username `Muslim College Multan`)
+   and that there is **no** way to change credentials from the panel.
 3. *Activity Logs* → you should see `LOGIN_SUCCESS`, `BOOTSTRAP_ADMINS`, etc.
 4. Add a class type → class → subjects → students → marks (see `ADMIN_GUIDE.md`).
 5. On the homepage **Result** tab pick a batch (**1st Year** / **Second Year**), enter a
@@ -169,7 +170,7 @@ supabase functions logs public-result
 
 | Symptom | Likely cause / fix |
 | --- | --- |
-| Admin login says *"Invalid username or password"* | Wrong `ADMIN_USER`/`ADMIN_PASS`, or `bootstrap-admins` not run after secrets changed |
+| Admin login says *"Invalid username or password"* | Wrong `FIXED_ADMIN_USER`/`FIXED_ADMIN_PASS`, or `bootstrap-admins` not run after secrets changed |
 | `MC_JWT_SECRET is not set` in logs | Secret missing — `supabase secrets set MC_JWT_SECRET=...` then re-deploy functions |
 | Result lookup shows "Lookup could not be completed" | `public-result` not deployed with **`--no-verify-jwt`**, or edge secrets not set; check `supabase functions logs public-result` |
 | Result lookup returns 429 "Too many lookups" | Per-IP limit reached (20/min) — wait a minute and retry; this is intentional anti-scraping |

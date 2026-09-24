@@ -52,7 +52,8 @@ const AdminDashboard = (() => {
     const demoBanner = Backend.isDemo
       ? '<div class="demo-note"><strong>Local demo mode:</strong> data lives only in this browser. ' +
         'To run for real, set <code>site-config.js → backend: "supabase"</code> and follow SETUP.md. ' +
-        'The master credential is not available in demo mode.</div>'
+        'Log in with the fixed administrator account (username: <strong>Muslim College Multan</strong>; ' +
+        'password is set in <code>js/backend-local.js</code>).</div>'
       : '';
 
     let formHtml = '';
@@ -148,7 +149,7 @@ const AdminDashboard = (() => {
     $('#panel-topbar-title').textContent = 'Admin Dashboard';
 
     const chip = $('#adm-userchip');
-    if (chip) chip.textContent = session.username + (session.isMaster ? ' (Master)' : '');
+    if (chip) chip.textContent = session.username + (session.isMaster ? ' (Fixed)' : '');
 
     const banner = $('#demo-banner');
     if (banner) {

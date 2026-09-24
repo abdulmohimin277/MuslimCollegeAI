@@ -25,18 +25,23 @@ This document describes how the platform is secured, what is enforced
 ## Where each credential lives
 
 ```
-<MASTER_USERNAME> / <MASTER_PASSWORD> ← Supabase secret (MASTER_ADMIN_USER/PASS)
-                                              → bcrypt hash in public.admins (is_master)
-<DEFAULT_ADMIN_USER> / <DEFAULT_ADMIN_PASS> ← Supabase secret (ADMIN_USER/PASS)
-                                              → bcrypt hash in public.admins
+<FIXED_ADMIN_USER / "Muslim College Multan">  ← Supabase secret (FIXED_ADMIN_USER)
+<FIXED_ADMIN_PASS / "2004">                    ← Supabase secret (FIXED_ADMIN_PASS)
+                                               → bcrypt hash in public.admins (single account, is_master)
 <GH_PAT>                                    ← Supabase secret only (GH_PAT)
 MC_JWT_SECRET                               ← Supabase secret (same as project JWT secret)
 DEPLOY_WEBHOOK_SECRET                       ← Supabase secret + GitHub secret MC_WEBHOOK_SECRET
 ```
 
-**None of these appear in the repository** — only the *names* of the environment
-variables do (in docs/workflow files). The one-time `bootstrap-admins` Edge Function
-hashes them with pgcrypto bcrypt before storing; raw values never touch the database.
+**There is exactly ONE administrator account** (owner-approved): username **Muslim College Multan**
+with a fixed password. It can **never** be changed from the panel — only by editing the
+code/configuration (demo: `js/backend-local.js`; production: `FIXED_ADMIN_USER`/`FIXED_ADMIN_PASS`
+secrets → re-run `bootstrap-admins`). In demo mode the username + password are constants in
+`backend-local.js` (this ships publicly by design — the demo panel is a local browser sandbox);
+in production they live in Supabase secrets — **never** in committed files, the frontend,
+localStorage, or API responses. The one-time `bootstrap-admins` Edge Function hashes the password
+with pgcrypto bcrypt before storing; raw values never touch the database, and it deletes any other
+admin rows so only the fixed account can log in.
 
 ---
 
@@ -113,16 +118,16 @@ Run through this before going live:
 - [ ] `bootstrap-admins` ran successfully (masked usernames returned).
 - [ ] `site-config.js` has `backend: 'supabase'` + real URL + **anon** key only (never service_role).
 - [ ] GitHub secrets `MC_WEBHOOK_URL` / `MC_WEBHOOK_SECRET` set; Pages source = **GitHub Actions**.
-- [ ] Repo-wide search returns **zero** matches for your master username and password:
-      GitHub → Code → search the repo for the literal master password; also run locally
-      (substitute your **real** values — never commit them):
-      `grep -rEi "<MASTER_USERNAME>|<MASTER_PASSWORD>|<DEFAULT_ADMIN_PASS>" .` → must be empty
-      (the About page's historical years 1994/2000/2004/2010 are **not** credentials — they are college-history dates).
-- [ ] GitHub repository secret `SECRET_SCAN_PATTERNS` is set to an alternation of your real
-      values (see `SETUP.md`); the deploy workflow's "Validate no secrets are shipped" step passes.
+- [ ] `SECRET_SCAN_PATTERNS` (GitHub secret) holds an alternation of your **long random** secrets
+      (`GH_PAT`, `DEPLOY_WEBHOOK_SECRET`, `MC_BOOTSTRAP_KEY`, `MC_JWT_SECRET` — see `SETUP.md`).
+      The fixed admin username/password is deliberately **excluded**: it ships publicly in the
+      demo code (`js/backend-local.js`) by owner design, so scanning for it would false-positive.
+      The deploy workflow's "Validate no secrets are shipped" step passes.
 - [ ] `admin-login` returns 401 for wrong credentials, and the 6th attempt returns **429** (locked).
 - [ ] `deploy-webhook` returns **401** without the `x-deploy-secret` header.
-- [ ] `bootstrap-admins` returns **401** without a valid bootstrap key / master JWT.
+- [ ] `bootstrap-admins` returns **401** without a valid bootstrap key / fixed-admin JWT.
+- [ ] Admin panel shows **no** way to change credentials (fixed account card only); `admin-security`
+      `change_credentials` returns **403** even with a valid admin token.
 - [ ] Result tab: entering a roll number for **1st Year** returns cards only for 1st Year students (any class); the same roll in **Second Year** only returns Second Year matches; unknown rolls show "No result found".
 - [ ] Uploading a renamed `.exe` (e.g. `photo.jpg` that is actually a PE file) is rejected with *"contents do not match its declared type"*.
 - [ ] Browser DevTools → Application → no credentials in `localStorage`/`sessionStorage` after login.

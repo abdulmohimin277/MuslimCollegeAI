@@ -1,19 +1,19 @@
 # Admin Guide — Muslim College AI Study Agent
 
-Everything an administrator can do, step by step. The master + default admin accounts
-are bootstrapped **server-side** (see `SETUP.md`). The dashboard is at **Admin → Admin
-Dashboard**.
+Everything an administrator can do, step by step. There is **one fixed administrator
+account** — username **Muslim College Multan**, password fixed in the code/configuration
+(see `README.md` → Admin Credentials and `SETUP.md`). The dashboard is at **Admin →
+Admin Dashboard**.
 
 ---
 
 ## 1. First login
 
 1. Open the site → **Admin Panel** → you land on the dashboard **lock screen**.
-2. In **Supabase (production)** mode there is no "create admin" form — the accounts come
-   from `bootstrap-admins`. Sign in with `ADMIN_USER` / `ADMIN_PASS` (set during setup).
-3. In **local demo** mode (before setup, `backend: 'local'`), the first run shows
-   *"Create Administrator"* — a clearly-labelled demo-only form so you can try the whole
-   UI offline.
+2. Sign in with the **fixed administrator account** — username `Muslim College Multan`
+   and the fixed password (set in `js/backend-local.js` in demo mode, or the
+   `FIXED_ADMIN_PASS` secret in production; see `SETUP.md`). There is **no** "create
+   admin" form — the single account is pre-configured.
 
 > 5 wrong attempts lock the account for 15 minutes (server-enforced).
 
@@ -26,7 +26,7 @@ Dashboard**.
 | **Overview** | Key stats (classes, students, announcements, deploy status) + quick actions |
 | **Result** | Drill-down flow: **batch (1st Year / Second Year) → classes → students → marks → results** |
 | **Announcement** | Create/edit/publish announcements with validated file attachments (image/video/document) |
-| **Admin / Security** | Change the **changeable** admin credentials (master is locked); session info |
+| **Admin / Security** | **Fixed administrator account** info (never changeable from the panel); session info |
 | **Activity Logs** | Auto-recorded audit trail (logins, data changes, deploys, exports) |
 | **AI / Diagnostics** | Gemini model rotation tests, connection tests (kept from the original app) |
 | **Settings** | Backend mode info, app version, data export/backup/restore |
@@ -132,12 +132,15 @@ Announcement tab:
 
 ## 5. Admin / Security
 
-- Change **username + password** for the changeable admin.
-  Requires the **current password**; new password ≥ 4 chars; username ≥ 3 chars;
-  the new username must not clash.
-- The **master account** is displayed but **cannot be changed from the panel** — it is
-  only modified via protected server configuration (`SETUP.md → section 4`, then re-run
-  `bootstrap-admins`).
+- There is **one fixed administrator account** — username **Muslim College Multan** with a
+  fixed password. The panel shows this account's info but provides **no way to change
+  credentials** (the change form was removed by design).
+- To change the credentials you must edit the code/configuration:
+  - **Demo mode:** edit the `FIXED_ADMIN_USER` / `FIXED_ADMIN_PASS` constants in
+    `js/backend-local.js`.
+  - **Production:** edit the `FIXED_ADMIN_USER` / `FIXED_ADMIN_PASS` Supabase secrets
+    (`supabase secrets set …`) and re-run `bootstrap-admins` (see `SETUP.md → section 4`).
+    This is intentionally the *only* path — attempts from the panel are denied and logged.
 - All attempts (including denied ones) appear in Activity Logs.
 
 ---
@@ -211,7 +214,7 @@ Settings tab:
 | Class result + print/PDF | Class detail → Class Result |
 | Single student result card | Class detail → student row → Result |
 | Announcement | Announcement tab |
-| Change own credentials | Admin/Security **or** Settings |
+| Change admin credentials | **Not possible from the panel** — edit `js/backend-local.js` (demo) or `FIXED_ADMIN_USER`/`FIXED_ADMIN_PASS` secrets + `bootstrap-admins` (production) |
 | Read audit trail | Activity Logs |
 | Backup / restore | Settings |
 | Deploy / history / rollback | Update Website |
