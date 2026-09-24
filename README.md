@@ -36,36 +36,47 @@ A pure **JavaScript** study assistant for Muslim College students — powered by
 
 | File / Folder | Purpose |
 | ---- | ------- |
-| `index.html` | Entry — routes to the AI Agent or login page |
-| `login.html` | Student login (name, roll no, API key) |
-| `agent.html` | AI Agent chat page |
-| `tools.html` | Tools page (install app, clear data, status) |
-| `admin.html` | Admin panel page |
-| `debug.html` | Debug & API diagnostics page |
-| `settings.html` | Settings hub (links to Tools / Admin / Debug / About) |
-| `about.html` | About / Privacy / Terms page |
-| `css/` | Design system split into files: `base.css` (reset + tokens + icons), `components.css` (forms, buttons, modal, toast), `login.css`, `layout.css` (sidebar), `chat.css` (agent UI), `pages.css` (tools/admin/about), `responsive.css` |
-| `app.js` | Entry redirector |
-| `js/config.js` | Constants (admin credentials, Gemini models, storage keys) |
-| `js/state.js` | Shared runtime state + cross-page persistence |
-| `js/utils.js` | DOM / storage / toast / debug helpers |
-| `js/api.js` | Gemini API + smart model rotation |
-| `js/chat.js` | Chat rendering, voice input, send flow, multi-chat history |
-| `js/pdf.js` | Save answer as PDF |
-| `js/pwa.js` | PWA install + service worker |
-| `js/auth.js` | Login / logout / session handling |
-| `js/ui.js` | Status labels + sidebar chat history + shared UI behaviours |
-| `js/admin.js` | Admin panel logic |
-| `js/debug.js` | Debug connection tests |
+| `index.html` | Single-page app: home / AI Agent / Result portal / Announcements / Admin Dashboard |
+| `site-config.js` | Public runtime config — backend mode (`local` demo vs `supabase`), Supabase URL + anon key, GitHub repo info, feature flags (contains NO secrets) |
+| `css/` | Design system: `base.css`, `components.css`, `login.css`, `layout.css`, `chat.css`, `pages.css`, `responsive.css` plus `admin.css`, `result.css`, `announcements.css`, `print.css` |
+| `js/config.js` | Public constants (app version, Gemini models, storage keys) — **no credentials** |
+| `js/security.js` | Client-side hygiene helpers; PBKDF2 hashing used only by the local demo sandbox |
+| `js/backend.js` | Backend facade — selects the active adapter (local demo or Supabase) |
+| `js/backend-local.js` | Demo adapter: in-browser sandbox store, clearly labelled DEMO |
+| `js/backend-supabase.js` | Production adapter: Edge Function auth, PostgREST + RLS, Storage, deploy trigger |
+| `js/state.js`, `js/utils.js`, `js/api.js`, `js/chat.js`, `js/pdf.js`, `js/pwa.js`, `js/auth.js`, `js/ui.js`, `js/debug.js`, `js/modals.js`, `js/router.js` | Shared app logic (chat, model rotation, PDF, PWA, diagnostics, routing) |
+| `js/admin-dashboard.js` | Admin Dashboard: lock screen, tabs, security, audit, export/restore, Update Website + rollback |
+| `js/result-mgmt.js`, `js/view-result.js`, `js/announcement-mgmt.js`, `js/view-announcements.js` | Result & announcement management + student portal views |
 | `js/pages/*.js` | Per-page initialisation & event wiring |
-| `assets/logo.png` | App logo |
-| `manifest.webmanifest`, `sw.js` | PWA install support |
+| `supabase/` | Backend: `schema.sql`, `policies.sql`, `restore.sql` + Edge Functions (`admin-login`, `student-login`, `admin-security`, `student-security`, `deploy`, `deploy-webhook`, `admin-data`, `upload`, `bootstrap-admins`) |
+| `.github/workflows/deploy.yml` | "Update Website" → rebuild GitHub Pages + status webhook |
+| `assets/logo.png`, `manifest.webmanifest`, `sw.js` | PWA install support |
 | `android/` | Native Android APK project (WebView wrapper) |
+
+## Documentation
+
+| Doc | What it covers |
+| --- | --- |
+| [`SETUP.md`](SETUP.md) | Full production setup: Supabase project, SQL scripts, Edge Functions, server secrets, GitHub Actions + Pages |
+| [`SECURITY.md`](SECURITY.md) | Security model, threat table, credential handling, server-side authorization, upload policy, audit coverage, pre-launch checklist, honest limitations |
+| [`ADMIN_GUIDE.md`](ADMIN_GUIDE.md) | Admin dashboard how-tos: results, announcements, security, audit, backup/restore, Update Website + rollback |
 
 ## Admin Credentials
 
-- Username: `muslim college`
-- Password: `muslim2004`
+There are **no admin credentials in this repository or in the deployed frontend** — by
+design. The master administrator and the changeable admin are created server-side from
+protected environment secrets and stored as bcrypt hashes in the backend database.
+
+- To get your accounts: follow [`SETUP.md`](SETUP.md) → sections 4 (server secrets) and 5
+  (bootstrap).
+- To change the daily admin login later: Admin Panel → **Admin / Security** (the master
+  account is never changeable from the panel).
+- In **local demo mode** (`site-config.js` → `backend: 'local'`) the dashboard shows a
+  clearly-labelled, browser-only "first run" administrator form so you can try the whole
+  UI offline before connecting Supabase.
+- If you find legacy hard-coded credentials in old copies inside this repo
+  (`MuslimCollegeAI-main/`, `backup/`), those are deprecated leftovers and are excluded
+  from deployment — see the deploy workflow cleanup step.
 
 ## Building the APK (optional)
 

@@ -3,9 +3,17 @@
    ============================================================ */
 'use strict';
 
-// Admin panel credentials.
-const ADMIN_USER = 'muslim college';
-const ADMIN_PASS = 'muslim2004';
+// ============================================================
+// SECURITY: Admin credentials are NEVER defined in frontend code.
+// Admin authentication now happens against the secure backend
+// (js/backend.js → Supabase Auth in production). Nothing here is
+// a credential. The master credential & default admin credential
+// live only in protected server-side secrets (see SETUP.md).
+// ============================================================
+
+// App / site version constants (public only).
+const APP_VERSION = (window.SITE_CONFIG && SITE_CONFIG.appVersion) || '4.0';
+const BUILD_DATE = (window.SITE_CONFIG && SITE_CONFIG.buildDate) || '';
 
 // Gemini chat models to try, newest → oldest.
 // The app automatically rotates to the next model whenever the

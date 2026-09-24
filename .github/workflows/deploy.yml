@@ -1,0 +1,123 @@
+# ============================================================
+# MUSLIM COLLEGE AI — DEPLOY TO GITHUB PAGES
+# ------------------------------------------------------------
+# Triggered by the admin "UPDATE WEBSITE" feature:
+#   Admin panel → Update Website → deployment summary → confirm
+#     → admin `deploy` Edge Function → GitHub repository_dispatch
+#       (event type: mc-deploy) → THIS workflow runs.
+#
+# The workflow rebuilds/re-uploads the static site (GitHub Pages),
+# then reports the outcome back to the `deploy-webhook` Edge
+# Function so the admin panel shows a live, accurate status.
+#
+# Required GitHub repository secrets:
+#   MC_WEBHOOK_URL          → https://<projref>.supabase.co/functions/v1/deploy-webhook
+#   MC_WEBHOOK_SECRET       → value of DEPLOY_WEBHOOK_SECRET (same secret
+#                             configured in Supabase `supabase secrets set`)
+#   SECRET_SCAN_PATTERNS    → ALTERNATION of your REAL secret values inside
+#                             < > (e.g. "<master_pass>|<master_user>|<admin_pass>").
+#                             Kept in repo settings so the workflow file never
+#                             contains them. Without it the "Validate no secrets
+#                             are shipped" step fails the build (fail-closed).
+#
+# Repository_dispatch also supports manual runs via the Actions tab
+# ("Run workflow") — note: client_payload.deployment_id will be empty
+# for manual runs, which the webhook tolerates.
+# ============================================================
+name: Deploy to GitHub Pages
+
+on:
+  repository_dispatch:
+    types: [mc-deploy]
+  workflow_dispatch:
+    inputs:
+      note:
+        description: 'Deploy note (optional)'
+        required: false
+        default: 'Manual deploy from Actions tab'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time — newest run waits for the running one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Notify workflow started
+        run: |
+          curl -fsS -X POST "${{ secrets.MC_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -H "x-deploy-secret: ${{ secrets.MC_WEBHOOK_SECRET }}" \
+            -d "{\"deployment_id\":\"${{ github.event.client_payload.deployment_id }}\",\"status\":\"running\",\"build_status\":\"building\",\"deploy_status\":\"queued\"}" \
+            || echo "::warning::Webhook notify (start) failed — Supabase may be starting up"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Strip legacy duplicates & embedded copies from the artifact
+        run: |
+          # Old nested copies / backups containing the DEPRECATED hard-coded
+          # admin credentials must never be served from GitHub Pages.
+          rm -rf MuslimCollegeAI-main backup android/app/src/main/assets
+          echo "Removed legacy duplicates. Remaining payload:"
+          ls -la
+
+      - name: Validate no secrets are shipped
+        env:
+          SCAN_PATTERNS: ${{ secrets.SECRET_SCAN_PATTERNS }}
+        run: |
+          if [ -z "$SCAN_PATTERNS" ]; then
+            echo "::error::SECRET_SCAN_PATTERNS repository secret is not configured."
+            echo "::error::Set it (Repo → Settings → Secrets → Actions) to the alternation of your"
+            echo "::error::real master/admin usernames & passwords, e.g. a value such as"
+            echo "::error::  <master_pass>|<master_user>|<admin_pass>"
+            echo "::error::Using literal placeholder text is fine for a trial run, but do NOT paste"
+            echo "::error::credentials into any committed file."
+            exit 1
+          fi
+          echo "Validating that no secret material is committed..."
+          if grep -rEil "$SCAN_PATTERNS" --include="*.js" --include="*.html" --include="*.json" --include="*.ts" .; then
+            echo "::error::Found potential secret material in committed files. Deployment aborted."
+            exit 1
+          fi
+          echo "Validation passed."
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: Notify success
+        if: success()
+        run: |
+          curl -fsS -X POST "${{ secrets.MC_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -H "x-deploy-secret: ${{ secrets.MC_WEBHOOK_SECRET }}" \
+            -d "{\"deployment_id\":\"${{ github.event.client_payload.deployment_id }}\",\"status\":\"success\",\"build_status\":\"success\",\"deploy_status\":\"success\",\"commit_ref\":\"${{ github.sha }}\",\"pages_url\":\"${{ steps.deploy.outputs.page_url }}\"}" \
+            || echo "::warning::Webhook notify (success) failed"
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          curl -fsS -X POST "${{ secrets.MC_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -H "x-deploy-secret: ${{ secrets.MC_WEBHOOK_SECRET }}" \
+            -d "{\"deployment_id\":\"${{ github.event.client_payload.deployment_id }}\",\"status\":\"failed\",\"build_status\":\"failed\",\"deploy_status\":\"failed\",\"error\":\"GitHub Actions workflow failed (see Actions run)\",\"commit_ref\":\"${{ github.sha }}\"}" \
+            || true

@@ -1,46 +1,13 @@
 /* ============================================================
-   ADMIN — locked panel, logs and model rotation tests
+   ADMIN — diagnostics helpers (rotation tests + activity logs).
+   ------------------------------------------------------------
+   NOTE: The old plaintext-credential admin login has been removed.
+   Admin sessions are now created by the secure backend
+   (js/backend.js) and managed by js/admin-dashboard.js.
+   These helpers are reused by the new Admin Dashboard's
+   "AI / Diagnostics" and "Overview" tabs.
    ============================================================ */
 'use strict';
-
-function renderAdmin() {
-  const lock = $('#admin-lock');
-  const panel = $('#admin-panel');
-  if (!lock || !panel) return;
-
-  lock.classList.toggle('hidden', adminUnlocked);
-  panel.classList.toggle('hidden', !adminUnlocked);
-
-  if (adminUnlocked) {
-    updateAgentModelLabel();
-    refreshLogs();
-  }
-}
-
-function loginAdmin() {
-  const user = $('#admin-user').value.trim().toLowerCase();
-  const pass = $('#admin-pass').value;
-
-  if (user === ADMIN_USER && pass === ADMIN_PASS) {
-    adminUnlocked = true;
-    writeLS(KEYS.admin, 'yes');
-    toast('Admin unlocked successfully!', 'success');
-    renderAdmin();
-  } else {
-    toast('Incorrect admin username or password!', 'error');
-  }
-}
-
-function lockAdmin() {
-  adminUnlocked = false;
-  removeLS(KEYS.admin);
-  const user = $('#admin-user');
-  const pass = $('#admin-pass');
-  if (user) user.value = '';
-  if (pass) pass.value = '';
-  toast('Admin panel locked.', '');
-  renderAdmin();
-}
 
 function refreshLogs() {
   const logs = $('#logs-text');

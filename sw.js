@@ -3,13 +3,14 @@
    Caches the app shell so the app installs & opens offline.
    ============================================================ */
 
-const CACHE = 'mc-study-agent-v6';
+const CACHE = 'mc-study-agent-v7';
 
 const ASSETS = [
   './',
   './index.html',
   './app.js',
   './manifest.webmanifest',
+  './site-config.js',
   './css/base.css',
   './css/components.css',
   './css/login.css',
@@ -17,9 +18,18 @@ const ASSETS = [
   './css/chat.css',
   './css/pages.css',
   './css/responsive.css',
+  './css/admin.css',
+  './css/result.css',
+  './css/announcements.css',
+  './css/print.css',
   './js/config.js',
   './js/state.js',
   './js/utils.js',
+  './js/security.js',
+  './js/backend-local.js',
+  './js/backend-supabase.js',
+  './js/backend.js',
+  './js/modals.js',
   './js/router.js',
   './js/api.js',
   './js/chat.js',
@@ -29,6 +39,11 @@ const ASSETS = [
   './js/ui.js',
   './js/admin.js',
   './js/debug.js',
+  './js/view-result.js',
+  './js/view-announcements.js',
+  './js/result-mgmt.js',
+  './js/announcement-mgmt.js',
+  './js/admin-dashboard.js',
   './js/pages/login.js',
   './js/pages/agent.js',
   './js/pages/tools.js',
@@ -36,6 +51,8 @@ const ASSETS = [
   './js/pages/debug.js',
   './js/pages/about.js',
   './js/pages/settings.js',
+  './js/pages/result.js',
+  './js/pages/announcements.js',
   './assets/logo.png',
   './assets/icon-192.png',
   './assets/icon-512.png',

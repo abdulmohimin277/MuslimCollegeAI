@@ -16,13 +16,15 @@
 
 const SPA = (() => {
   // Dashboard (logged-in) routes vs public routes.
-  const DASHBOARD_ROUTES = ['agent', 'tools', 'settings', 'admin', 'debug'];
+  const DASHBOARD_ROUTES = ['agent', 'tools', 'settings', 'admin', 'debug', 'result', 'announcements'];
   const PUBLIC_ROUTES = ['login', 'about'];
   const DEFAULT_HEADING = {
     tools: 'Tools &amp; Settings',
     settings: 'Settings',
     admin: 'Admin Panel',
     debug: 'Debug &amp; Diagnostics',
+    result: 'My Result',
+    announcements: 'Announcement',
   };
 
   /*
@@ -143,6 +145,8 @@ const SPA = (() => {
     settings: (params) => mountSettingsPage(params),
     admin: (params) => mountAdminPage(params),
     debug: (params) => mountDebugPage(params),
+    result: (params) => mountResultPage(params),
+    announcements: (params) => mountAnnouncementsPage(params),
     about: (params) => mountAboutPage(params),
   };
 

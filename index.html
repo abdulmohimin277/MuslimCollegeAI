@@ -23,6 +23,10 @@
   <link rel="stylesheet" href="css/chat.css" />
   <link rel="stylesheet" href="css/pages.css" />
   <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="css/result.css" />
+  <link rel="stylesheet" href="css/announcements.css" />
+  <link rel="stylesheet" href="css/print.css" />
 </head>
 <body>
 
@@ -124,6 +128,18 @@
         <div class="chat-history" id="chat-history" aria-label="Previous chats"></div>
 
         <nav class="sidebar-nav">
+          <a class="nav-item" data-page="result" href="#/result">
+            <span class="nav-icon">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+            </span>
+            <span>Result</span>
+          </a>
+          <a class="nav-item" data-page="announcements" href="#/announcements">
+            <span class="nav-icon">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+            </span>
+            <span>Announcement</span>
+          </a>
           <a class="nav-item" data-page="settings" href="#/settings">
             <span class="nav-icon">
               <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -195,7 +211,7 @@
             </div>
 
             <div id="thinking-bar" class="thinking hidden">
-              <span class="spinner"></span>
+              <span class="thinking-dots" aria-hidden="true"><span></span><span></span><span></span></span>
               <span>Thinking…</span>
             </div>
 
@@ -298,6 +314,28 @@
 
             <div class="settings-grid">
 
+              <a class="settings-tile" href="#/result">
+                <div class="tile-icon shield">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>Result</h3>
+                  <p class="card-note">View your result card, subject-wise marks, percentage and status (read only).</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
+              <a class="settings-tile" href="#/announcements">
+                <div class="tile-icon shield">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>Announcement</h3>
+                  <p class="card-note">Read college announcements, notices, documents and videos (read only).</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
               <a class="settings-tile" href="#/tools">
                 <div class="tile-icon">
                   <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
@@ -346,6 +384,32 @@
           </div>
         </section>
 
+        <!-- ============ RESULT (student portal) ============ -->
+        <section id="tab-result" class="tab-panel panel-scroll hidden">
+          <div class="result-portal">
+            <div class="panel-head">
+              <div class="head-block">
+                <h2>My Result</h2>
+                <p class="head-sub">View your result card — read only, secure, and protected to you alone.</p>
+              </div>
+            </div>
+            <div id="student-result-root"></div>
+          </div>
+        </section>
+
+        <!-- ============ ANNOUNCEMENTS (student portal) ============ -->
+        <section id="tab-announcements" class="tab-panel panel-scroll hidden">
+          <div class="announcement-portal">
+            <div class="panel-head">
+              <div class="head-block">
+                <h2>Announcement</h2>
+                <p class="head-sub">College notices, documents and videos — read only.</p>
+              </div>
+            </div>
+            <div id="student-announcement-root"></div>
+          </div>
+        </section>
+
         <!-- ============ ADMIN ============ -->
         <section id="tab-admin" class="tab-panel panel-scroll hidden">
           <div class="panel-inner">
@@ -356,91 +420,353 @@
                 <svg class="ic ic-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <h2>Admin Panel Locked</h2>
-              <p class="muted">Enter the admin credentials to unlock the control panel.</p>
-
-              <div class="panel-field">
-                <label for="admin-user">Admin username</label>
-                <input id="admin-user" type="text" placeholder="muslim college" autocomplete="off" />
-              </div>
-
-              <div class="panel-field">
-                <label for="admin-pass">Password</label>
-                <div class="field key-field">
-                  <input id="admin-pass" type="password" placeholder="••••••••" autocomplete="off" />
-                  <button id="toggle-admin-pass" type="button" class="toggle-key" title="Show / hide password">
-                    <svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <button id="admin-unlock-btn" class="btn primary">Unlock Panel</button>
+              <p class="muted">Secure login — credentials are verified by the backend, never by this page.</p>
+              <div id="admin-lock-body"></div>
             </div>
 
-            <!-- Admin Panel (visible when unlocked) -->
-            <div id="admin-panel" class="hidden">
-              <div class="panel-head">
+            <!-- Admin Dashboard (visible only with a valid backend session) -->
+            <div id="admin-dashboard" class="hidden">
+              <div id="demo-banner" class="demo-banner" hidden></div>
+
+              <div class="adm-head">
                 <div class="head-block">
-                  <h2>Admin Control Panel</h2>
-                  <p class="head-sub">Monitor usage, manage chat logs and test the model pipeline.</p>
+                  <h2>Admin Dashboard</h2>
+                  <p class="head-sub">Manage results, announcements, security, diagnostics and website deployment.</p>
                 </div>
-                <div class="admin-badge">
-                  <span class="badge-dot"></span>
-                  <span>Admin Mode</span>
-                  <button id="admin-lock-btn" class="icon-btn ghost" type="button" title="Lock the panel">
-                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  </button>
+                <div class="adm-userchip" id="adm-userchip">Admin</div>
+                <button id="adm-logout-btn" class="btn outline sm" type="button">Logout</button>
+              </div>
+
+              <nav class="adm-tabs" id="adm-tabs" aria-label="Admin sections">
+                <button class="adm-tab active" type="button" data-admsec="overview">Overview</button>
+                <button class="adm-tab" type="button" data-admsec="result">Result</button>
+                <button class="adm-tab" type="button" data-admsec="announcements">Announcement</button>
+                <button class="adm-tab" type="button" data-admsec="security">Admin / Security</button>
+                <button class="adm-tab" type="button" data-admsec="logs">Activity Logs</button>
+                <button class="adm-tab" type="button" data-admsec="ai">AI / Diagnostics</button>
+                <button class="adm-tab" type="button" data-admsec="settings">Settings</button>
+                <button class="adm-tab" type="button" data-admsec="update">Update Website</button>
+              </nav>
+
+              <!-- Overview -->
+              <div class="adm-sec active" id="adm-sec-overview">
+                <div class="adm-stats" id="adm-overview-stats"></div>
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line class="bar1" x1="18" y1="20" x2="18" y2="10"/><line class="bar2" x1="12" y1="20" x2="12" y2="4"/><line class="bar3" x1="6" y1="20" x2="6" y2="14"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Active model &amp; backend</h3>
+                      <p class="card-note">Current runtime state for the AI agent and the secure backend.</p>
+                    </div>
+                  </div>
+                  <div class="stat-list">
+                    <div class="stat-row"><span>Active Model</span><span id="admin-active-model">—</span></div>
+                    <div class="stat-row"><span>Rotation Status</span><span id="admin-rotation-status">Idle</span></div>
+                    <div class="stat-row"><span>Backend Mode</span><span id="adm-backend-mode">—</span></div>
+                    <div class="stat-row"><span>Website Version</span><span id="adm-site-version">—</span></div>
+                    <div class="stat-row"><span>Last Update</span><span id="adm-last-update">—</span></div>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Student activity logs</h3>
+                      <p class="card-note">Recent questions asked in this browser session (existing feature kept).</p>
+                    </div>
+                  </div>
+                  <pre id="logs-text">Loading…</pre>
+                  <div class="btn-row">
+                    <button id="refresh-logs-btn" class="btn outline sm" type="button">Refresh Logs</button>
+                    <button id="admin-clear-logs-btn" class="btn danger sm" type="button">Clear Logs</button>
+                  </div>
                 </div>
               </div>
 
-              <div class="card">
-                <div class="card-head">
-                  <div class="card-icon">
-                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line class="bar1" x1="18" y1="20" x2="18" y2="10"/><line class="bar2" x1="12" y1="20" x2="12" y2="4"/><line class="bar3" x1="6" y1="20" x2="6" y2="14"/></svg>
+              <!-- Result Management -->
+              <div class="adm-sec" id="adm-sec-result">
+                <nav class="adm-tabs result-subtabs" id="result-subtabs" aria-label="Result sections">
+                  <button class="adm-tab active" type="button" data-resultsec="classes">Classes</button>
+                  <button class="adm-tab" type="button" data-resultsec="classtypes">Class Types</button>
+                  <button class="adm-tab" type="button" data-resultsec="subjects">Subjects</button>
+                  <button class="adm-tab" type="button" data-resultsec="students">Students</button>
+                  <button class="adm-tab" type="button" data-resultsec="marks">Enter Marks</button>
+                  <button class="adm-tab" type="button" data-resultsec="classresult">Class Result</button>
+                  <button class="adm-tab" type="button" data-resultsec="studentresult">Student Result</button>
+                </nav>
+
+                <div class="result-sec" id="result-sec-classes">
+                  <div class="adm-toolbar">
+                    <input class="panel-input grow" id="class-search" type="search" placeholder="Search classes…" />
+                    <button class="btn primary sm" id="add-class-btn" type="button">+ Add Class</button>
                   </div>
-                  <div class="card-body">
-                    <h3>Overview</h3>
-                    <p class="card-note">Current runtime state of the agent.</p>
-                  </div>
+                  <div class="tbl-wrap" id="classes-table-wrap"><div class="empty-state">Loading classes…</div></div>
                 </div>
-                <div class="stat-list">
-                  <div class="stat-row"><span>Active Model</span><span id="admin-active-model">—</span></div>
-                  <div class="stat-row"><span>Rotation Status</span><span id="admin-rotation-status">Idle</span></div>
+
+                <div class="result-sec hidden" id="result-sec-classtypes">
+                  <div class="adm-toolbar">
+                    <input class="panel-input grow" id="classtype-name" type="text" placeholder="New class type, e.g. Commerce" />
+                    <button class="btn primary sm" id="add-classtype-btn" type="button">+ Add Class Type</button>
+                  </div>
+                  <div class="tbl-wrap" id="classtypes-table-wrap"></div>
+                </div>
+
+                <div class="result-sec hidden" id="result-sec-subjects">
+                  <div class="card">
+                    <div class="panel-field">
+                      <label class="panel-label" for="subject-class-select">Select class to configure subjects</label>
+                      <select class="panel-select" id="subject-class-select"></select>
+                    </div>
+                    <p class="card-note">Subjects, total marks, passing marks and order are configurable per class/type.</p>
+                  </div>
+                  <div class="adm-toolbar">
+                    <input class="panel-input" id="subject-name" type="text" placeholder="Subject name" />
+                    <input class="panel-input" id="subject-total" type="number" min="1" value="100" placeholder="Total" style="max-width:110px" />
+                    <input class="panel-input" id="subject-passing" type="number" min="0" value="33" placeholder="Passing" style="max-width:110px" />
+                    <button class="btn primary sm" id="add-subject-btn" type="button">+ Add Subject</button>
+                  </div>
+                  <div class="tbl-wrap" id="subjects-table-wrap"></div>
+                </div>
+
+                <div class="result-sec hidden" id="result-sec-students">
+                  <div class="adm-toolbar">
+                    <select class="panel-select" id="student-class-filter" style="max-width:240px"></select>
+                    <input class="panel-input grow" id="student-search" type="search" placeholder="Search by name, father name or roll number…" />
+                    <button class="btn primary sm" id="add-student-btn" type="button">+ Add Student</button>
+                  </div>
+                  <div class="tbl-wrap" id="students-table-wrap"></div>
+                </div>
+
+                <div class="result-sec hidden" id="result-sec-marks">
+                  <div class="card">
+                    <div class="panel-field">
+                      <label class="panel-label" for="marks-student-select">Select a student</label>
+                      <select class="panel-select" id="marks-student-select"></select>
+                    </div>
+                  </div>
+                  <div id="marks-entry-area"><div class="empty-state">Choose a student to enter marks.</div></div>
+                </div>
+
+                <div class="result-sec hidden" id="result-sec-classresult">
+                  <div class="adm-toolbar">
+                    <select class="panel-select" id="classresult-class-select" style="max-width:280px"></select>
+                    <button class="btn outline sm" id="classresult-refresh-btn" type="button">Refresh</button>
+                    <button class="btn primary sm" id="classresult-print-btn" type="button">Print</button>
+                    <button class="btn outline sm" id="classresult-pdf-btn" type="button">PDF</button>
+                  </div>
+                  <div id="class-result-area"><div class="empty-state">Select a class to generate the class result.</div></div>
+                </div>
+
+                <div class="result-sec hidden" id="result-sec-studentresult">
+                  <div class="adm-toolbar">
+                    <select class="panel-select" id="singleresult-student-select" style="max-width:360px"></select>
+                    <button class="btn outline sm" id="singleresult-refresh-btn" type="button">Refresh</button>
+                  </div>
+                  <div id="single-result-area"><div class="empty-state">Select a student to view their result card.</div></div>
                 </div>
               </div>
 
-              <div class="card">
-                <div class="card-head">
-                  <div class="card-icon">
-                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <!-- Announcements (admin) -->
+              <div class="adm-sec" id="adm-sec-announcements">
+                <div class="adm-toolbar">
+                  <button class="btn primary sm" id="ann-create-btn" type="button">+ New Announcement</button>
+                  <button class="btn outline sm" id="ann-refresh-btn" type="button">Refresh</button>
+                </div>
+                <div id="ann-admin-list"><div class="empty-state">Loading announcements…</div></div>
+              </div>
+
+              <!-- Admin / Security -->
+              <div class="adm-sec" id="adm-sec-security">
+                <div class="sec-note">
+                  Changeable admin credentials are stored securely (hashed, server-side in production).
+                  The master credential is configured only through protected server configuration and can
+                  unlock / reset this panel if the changeable password is lost. No credentials are ever
+                  stored in this browser.
+                </div>
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Change admin username / password</h3>
+                      <p class="card-note">The default changeable admin can update their credentials here. The master account cannot be changed from this panel.</p>
+                    </div>
                   </div>
-                  <div class="card-body">
-                    <h3>Student activity logs</h3>
-                    <p class="card-note">Record of the questions asked in this session.</p>
+                  <div class="form-grid">
+                    <div class="panel-field">
+                      <label class="panel-label" for="sec-current-pass">Current password</label>
+                      <input class="panel-input" id="sec-current-pass" type="password" autocomplete="off" />
+                    </div>
+                    <div class="panel-field"></div>
+                    <div class="panel-field">
+                      <label class="panel-label" for="sec-new-username">New username</label>
+                      <input class="panel-input" id="sec-new-username" type="text" autocomplete="off" />
+                    </div>
+                    <div class="panel-field">
+                      <label class="panel-label" for="sec-new-pass">New password</label>
+                      <input class="panel-input" id="sec-new-pass" type="password" autocomplete="off" />
+                    </div>
+                  </div>
+                  <div class="btn-row">
+                    <button class="btn primary sm" id="sec-change-btn" type="button">Update Credentials</button>
                   </div>
                 </div>
-                <pre id="logs-text">Loading…</pre>
-                <div class="btn-row">
-                  <button id="refresh-logs-btn" class="btn outline sm">Refresh Logs</button>
-                  <button id="admin-clear-logs-btn" class="btn danger sm">Clear Logs</button>
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Session security</h3>
+                      <p class="card-note">Sessions are kept in memory with expiry, and expire on refresh. Brute-force protection locks an account after repeated failed logins. The student portal requires roll number + PIN.</p>
+                    </div>
+                  </div>
+                  <div class="btn-row">
+                    <button class="btn outline sm" id="sec-lock-now-btn" type="button">Lock Panel Now</button>
+                  </div>
                 </div>
               </div>
 
-              <div class="card">
-                <div class="card-head">
-                  <div class="card-icon">
-                    <svg class="ic ic-rotate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9"/><polyline points="21 3 21 9 15 9"/></svg>
+              <!-- Activity Logs -->
+              <div class="adm-sec" id="adm-sec-logs">
+                <div class="adm-toolbar">
+                  <button class="btn outline sm" id="audit-refresh-btn" type="button">Refresh</button>
+                </div>
+                <div class="tbl-wrap" id="audit-list-wrap"><div class="empty-state">Loading audit log…</div></div>
+              </div>
+
+              <!-- AI / Diagnostics -->
+              <div class="adm-sec" id="adm-sec-ai">
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic ic-rotate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9"/><polyline points="21 3 21 9 15 9"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Model rotation</h3>
+                      <p class="card-note">A question automatically retries with the next model whenever one fails. Test every model to find the fastest working one (existing feature, kept).</p>
+                    </div>
                   </div>
-                  <div class="card-body">
-                    <h3>Model rotation</h3>
-                    <p class="card-note">
-                      A question automatically retries with the next model whenever one fails.
-                      Use the tests below to check every model on the list and find the fastest working one.
-                    </p>
+                  <div id="admin-rotation-result" class="rotation-result"></div>
+                  <div class="btn-row">
+                    <button id="admin-test-rotation-btn" class="btn primary sm" type="button">Test All Models</button>
                   </div>
                 </div>
-                <div id="admin-rotation-result" class="rotation-result"></div>
-                <div class="btn-row">
-                  <button id="admin-test-rotation-btn" class="btn primary sm">Test All Models</button>
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Gemini connection test</h3>
+                      <p class="card-note">Diagnostics remain available on the Debug page, and are also linked here.</p>
+                    </div>
+                  </div>
+                  <div class="btn-row">
+                    <a class="btn outline sm" href="#/debug">Open Debug &amp; Diagnostics</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Settings (admin) -->
+              <div class="adm-sec" id="adm-sec-settings">
+                <div class="sec-note">
+                  Data safety: you can export a full backup and restore it later. Destructive actions always ask for
+                  confirmation and are written to the audit log.
+                </div>
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Export backup</h3>
+                      <p class="card-note">Download a JSON snapshot of classes, students, marks and announcements (credential hashes are never exported).</p>
+                    </div>
+                  </div>
+                  <div class="btn-row">
+                    <button class="btn primary sm" id="export-data-btn" type="button">Export Data (JSON)</button>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9"/><polyline points="21 3 21 9 15 9"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Restore backup</h3>
+                      <p class="card-note">Restore data from a previously exported JSON file. This replaces current data — confirmation is required.</p>
+                    </div>
+                  </div>
+                  <div class="btn-row">
+                    <input type="file" id="restore-file-input" accept="application/json,.json" class="hidden" />
+                    <button class="btn outline sm" id="restore-data-btn" type="button">Restore from JSON</button>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>About this build</h3>
+                      <p class="card-note">Version and backend information for this deployment.</p>
+                    </div>
+                  </div>
+                  <div class="stat-list">
+                    <div class="stat-row"><span>App Version</span><span id="adm-about-version">—</span></div>
+                    <div class="stat-row"><span>Backend Mode</span><span id="adm-about-mode">—</span></div>
+                    <div class="stat-row"><span>Build Date</span><span id="adm-about-build">—</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Update Website -->
+              <div class="adm-sec" id="adm-sec-update">
+                <div class="deploy-meta" id="update-site-meta">
+                  <div class="row"><span>Website version</span><span id="up-version">—</span></div>
+                  <div class="row"><span>Last update</span><span id="up-last-update">—</span></div>
+                  <div class="row"><span>Last update status</span><span id="up-last-status">—</span></div>
+                  <div class="row"><span>Last deployment</span><span id="up-last-deploy">—</span></div>
+                  <div class="row"><span>Deployment status</span><span id="up-deploy-status">—</span></div>
+                </div>
+
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Publish to the live website</h3>
+                      <p class="card-note">
+                        Validates your session, securely stores your changes, then triggers GitHub →
+                        GitHub Actions → build → GitHub Pages. Your GitHub token is never exposed to the browser.
+                      </p>
+                    </div>
+                  </div>
+                  <div id="update-summary-box"></div>
+                  <div class="btn-row">
+                    <button id="update-site-btn" class="btn primary" type="button">UPDATE WEBSITE</button>
+                  </div>
+                  <div id="update-progress-box"></div>
+                </div>
+
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-icon">
+                      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="card-body">
+                      <h3>Deployment history</h3>
+                      <p class="card-note">Previous deployments, their status, reference and roleback option.</p>
+                    </div>
+                  </div>
+                  <div id="deployment-history-wrap"><div class="empty-state">No deployments yet.</div></div>
                 </div>
               </div>
             </div>
@@ -740,9 +1066,15 @@
 
   </div>
 
+  <script src="site-config.js"></script>
   <script src="js/config.js"></script>
   <script src="js/state.js"></script>
   <script src="js/utils.js"></script>
+  <script src="js/security.js"></script>
+  <script src="js/backend-local.js"></script>
+  <script src="js/backend-supabase.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/modals.js"></script>
   <script src="js/router.js"></script>
   <script src="js/api.js"></script>
   <script src="js/chat.js"></script>
@@ -752,10 +1084,17 @@
   <script src="js/ui.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/debug.js"></script>
+  <script src="js/view-result.js"></script>
+  <script src="js/view-announcements.js"></script>
+  <script src="js/result-mgmt.js"></script>
+  <script src="js/announcement-mgmt.js"></script>
+  <script src="js/admin-dashboard.js"></script>
   <script src="js/pages/login.js"></script>
   <script src="js/pages/agent.js"></script>
   <script src="js/pages/tools.js"></script>
   <script src="js/pages/settings.js"></script>
+  <script src="js/pages/result.js"></script>
+  <script src="js/pages/announcements.js"></script>
   <script src="js/pages/admin.js"></script>
   <script src="js/pages/debug.js"></script>
   <script src="js/pages/about.js"></script>
