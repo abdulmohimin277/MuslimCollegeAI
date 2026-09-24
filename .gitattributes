@@ -1,0 +1,10 @@
+# Normalize text files to LF in the repository
+* text=auto
+
+# Shell scripts must stay LF so they run on the Linux CI runners
+*.sh text eol=lf
+
+# Gradle wrapper (the Unix shell script needs LF + executable bit;
+# gradlew.bat stays CRLF for Windows)
+gradlew text eol=lf
+gradlew.bat text eol=crlf
