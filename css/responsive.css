@@ -131,14 +131,51 @@
     padding: 7px 12px;
   }
   .about-hero {
-    padding: 26px 16px 22px;
+    grid-template-columns: 1fr;
+    gap: 26px;
+    padding: 30px 18px 28px;
+  }
+  .hero-copy {
+    align-items: center;
+    text-align: center;
+  }
+  .hero-badges {
+    flex-wrap: wrap;
+    justify-content: center;
   }
   .about-hero .about-logo {
-    width: 68px;
-    height: 68px;
+    width: 64px;
+    height: 64px;
+  }
+  .about-hero h3 {
+    font-size: 22px;
+  }
+  .hero-stats {
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    width: 100%;
+  }
+  .hero-stat {
+    padding: 9px 12px;
+  }
+  .hero-stat strong {
+    font-size: 16px;
+  }
+  .hero-img-wrap {
+    height: 250px;
+  }
+  .about-sec-intro {
+    padding-left: 20px;
+  }
+  .about-body {
+    padding: 20px 14px 36px;
   }
   .campus-grid {
     grid-template-columns: 1fr;
+  }
+  .leader-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
   }
   .panel-inner {
     width: 100%;
@@ -201,6 +238,18 @@
   }
   .about-strip .brand-row {
     gap: 8px;
+  }
+  .about-hero {
+    padding: 26px 14px 22px;
+  }
+  .hero-img-wrap {
+    height: 200px;
+  }
+  .hero-stat {
+    padding: 8px 10px;
+  }
+  .hero-stat span {
+    font-size: 8.5px;
   }
 }
 
