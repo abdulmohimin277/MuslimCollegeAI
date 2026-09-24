@@ -11,7 +11,7 @@ This document describes how the platform is secured, what is enforced
 | --- | --- |
 | Credential theft from the public repo / deployed site | Credentials exist **only** in Supabase secrets (Edge Functions) — never in any committed file, JS, HTML, localStorage, or API response |
 | Password brute force | bcrypt hashing + 5-fail / 15-minute lockout (`login_attempts`), per admin **and** per student |
-| Student impersonation (guessing a roll number) | Student portal requires **roll number + PIN** → PBKDF2-SHA256 hash check → per-student JWT. Roll number alone is useless |
+| Student impersonation (guessing a roll number) | **Owner-approved design:** the public Result tab shows a result card from a roll number alone (batch + roll). Mitigations: results are served only by the `public-result` Edge Function (rate-limited ~20 req/min/IP) which returns **only card fields** — never PIN hashes, contact, admission, photos; raw tables stay RLS-locked and are not anon-readable. The optional per-student PIN flow (PBKDF2 + per-student JWT) is still implemented and can be re-enabled if desired |
 | Reading other students' marks | RLS: a student JWT can only read **its own** student row / class / subjects / marks |
 | Forging an admin session | JWTs signed with `MC_JWT_SECRET` (= Supabase project JWT secret), 8-hour expiry, verified server-side on every admin op |
 | XSS stealing data | No session data in `localStorage`/`sessionStorage` — sessions live **in memory only**; all rendered text is escaped |
@@ -57,7 +57,9 @@ hashes them with pgcrypto bcrypt before storing; raw values never touch the data
 
 ### Rate limiting / lockout
 - 5 consecutive failed attempts → locked for **15 minutes** (`login_attempts` table, server-side).
-- Lockout applies to admin (`adm:<username>`) and student portal (`stu:<roll>`) independently.
+- Lockout applies to admin (`adm:<username>`) and the optional student PIN login (`stu:<roll>`) independently.
+- Public result lookups (`public-result`) are limited to **20 requests per minute per IP**
+  (best-effort, in-memory) to slow bulk roll-number scraping.
 - The lock message itself is rate-limited to one audit entry per attempt.
 
 ---
@@ -70,7 +72,8 @@ hashes them with pgcrypto bcrypt before storing; raw values never touch the data
   `obtained <= total` is enforced by the frontend calculator + RLS `WITH CHECK`.
 - Announcement bodies are stored as plain text and rendered **escaped**
   (`escapeHtml`) — HTML/script in user content cannot execute.
-- Roll numbers are digit-normalised; PINs are length-checked (4–32) then hashed.
+- Roll numbers are digit-normalised; optional PINs are length-checked (4–32) then hashed.
+- `public-result` validates `batch` against an allowlist and `roll` to digits only before querying.
 
 ---
 
@@ -91,7 +94,8 @@ hashes them with pgcrypto bcrypt before storing; raw values never touch the data
 | Event | Where recorded |
 | --- | --- |
 | Admin login success / fail / lock | Edge function → `audit_logs` |
-| Student portal login success / fail / lock | Edge function → `audit_logs` |
+| Student PIN login (optional flow, if enabled) success / fail / lock | Edge function → `audit_logs` |
+| Public result lookups (batch + roll) | **Not audited by design** — no roll-number/PII retention in logs for lookups; only rate-limit violations are counted (in-memory) |
 | Any data change (classes, students, marks, announcements, files) | Postgres trigger → `audit_logs` |
 | Credential change attempts (success *and* denied) | Edge function → `audit_logs` |
 | Deployment trigger / finish / rollback | Edge function → `audit_logs` |
@@ -119,7 +123,7 @@ Run through this before going live:
 - [ ] `admin-login` returns 401 for wrong credentials, and the 6th attempt returns **429** (locked).
 - [ ] `deploy-webhook` returns **401** without the `x-deploy-secret` header.
 - [ ] `bootstrap-admins` returns **401** without a valid bootstrap key / master JWT.
-- [ ] Student login with a correct roll number but **wrong PIN** fails; the student cannot read another student's marks (test with two students).
+- [ ] Result tab: entering a roll number for **1st Year** returns cards only for 1st Year students (any class); the same roll in **Second Year** only returns Second Year matches; unknown rolls show "No result found".
 - [ ] Uploading a renamed `.exe` (e.g. `photo.jpg` that is actually a PE file) is rejected with *"contents do not match its declared type"*.
 - [ ] Browser DevTools → Application → no credentials in `localStorage`/`sessionStorage` after login.
 - [ ] Function logs contain **no** raw passwords/PINs (`supabase functions logs`).

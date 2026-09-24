@@ -76,7 +76,8 @@ search box for that class.
 **3.5 Add New Student**
 In the class detail, click **"+ Add New Student"**: roll number (digits), student name,
 father name, class (pre-set), gender, date of birth, contact, admission info, notes.
-After saving, use the **PIN** button on the student row to set their portal PIN.
+After saving, you may optionally use the **PIN** button on the student row — the public
+Result view no longer needs a PIN (see §3.8).
 
 **3.6 Marks entry + auto-calc**
 Open a student via the **Marks** button in their row, or type their **roll number** in
@@ -91,11 +92,24 @@ Result. **Search + sort** by roll / name / percentage, **Print**, **PDF** (jsPDF
 back to the print dialog offline) and **Download CSV**. Click **Result Card** on any row
 for the printable single-student card.
 
-**3.8 Student portal**
-Set a student's **PIN** (class detail → student row → PIN button) — PINs are
-PBKDF2-hashed server-side. The student then logs in on **Result** from the homepage with
-**roll number + PIN** and sees only **their own** result card. Logging in with a roll
-number alone is impossible.
+**3.8 Student portal (Result tab)**
+
+On the homepage **Result** tab a visitor first picks a batch — **1st Year** or
+**Second Year** — then enters a **roll number**. The portal searches **every class of
+that batch** (any class type) and instantly shows the matching student's **result card**
+with **Print / Download PDF / Copy** options. **No login and no PIN** — the roll number
+alone is enough. If two students in different classes share a roll number, every match
+is shown, each labelled with its class. A blue result card appears only when a student
+with that roll exists in the chosen batch; otherwise a "No result found" message is shown
+with options to retry or switch batch.
+
+The card shows roll number, name, father name, class, class type, batch, session, all
+subjects with total/obtained/percentage/grade/status, overall percentage + grade, and the
+final **Pass / Fail** verdict.
+
+> **Note:** the optional student **PIN** (set per student) is no longer required to view
+> results — by design the public Result view is roll-number based (rate-limited on the
+> live backend).
 
 > All destructive actions (delete class/subject/student/announcement/file) show a
 > **confirmation dialog** first.
@@ -192,7 +206,7 @@ Settings tab:
 | Add class | Batch view → + Add New Class |
 | Configure subjects | Class detail → Manage Subjects |
 | Add student | Class detail → + Add New Student |
-| Set student PIN | Class detail → student row → PIN |
+| Set student PIN *(optional)* | Class detail → student row → PIN |
 | Enter marks | Class detail → student row → Marks, **or** top roll-number search |
 | Class result + print/PDF | Class detail → Class Result |
 | Single student result card | Class detail → student row → Result |

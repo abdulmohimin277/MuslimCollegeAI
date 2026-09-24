@@ -628,6 +628,76 @@ const BackendLocal = (() => {
     return { ok: true, count: sanitized.length };
   }
 
+  /* --------- public result lookup (batch + roll, no login) ---------
+     The student Result tab asks for a batch (1st Year / Second Year)
+     and a roll number, then returns the card data for every match in
+     ANY class of that batch. Returns ONLY the fields a result card
+     needs — never PIN material. Mirrors the public-result edge fn. */
+  async function publicResultLookup(batch, roll) {
+    const b = str(batch, 30);
+    const q = onlyDigits(roll, 20);
+    if (!b || !q) return { ok: false, error: 'Choose a batch and enter a roll number.' };
+    const db = loadDB();
+    const classIds = db.classes
+      .filter((c) => (c.batch || '1st Year') === b)
+      .map((c) => c.id);
+    if (!classIds.length) return { ok: true, matches: [] };
+    const qn = q.replace(/^0+/, '');
+    const hits = db.students.filter(
+      (s) =>
+        classIds.includes(s.classId) &&
+        String(s.rollNumber || '').replace(/^0+/, '') === qn
+    );
+    const matches = hits
+      .map((s) => {
+        const cls = db.classes.find((c) => c.id === s.classId);
+        if (!cls) return null;
+        const type = db.classTypes.find((t) => t.id === cls.classTypeId);
+        const subjects = db.classSubjects
+          .filter((x) => x.classId === s.classId)
+          .slice()
+          .sort((a, b2) => (a.sortOrder || 0) - (b2.sortOrder || 0))
+          .map((x) => ({
+            id: x.id,
+            name: x.name,
+            totalMarks: x.totalMarks,
+            passingMarks: x.passingMarks,
+            sortOrder: x.sortOrder || 0,
+          }));
+        const marks = db.marks
+          .filter((m) => m.studentId === s.id)
+          .map((m) => ({
+            classSubjectId: m.classSubjectId,
+            totalMarks: m.totalMarks,
+            obtainedMarks: m.obtainedMarks,
+          }));
+        return {
+          student: {
+            id: s.id,
+            rollNumber: s.rollNumber,
+            name: s.name,
+            fatherName: s.fatherName || '',
+            classId: s.classId,
+            session: s.session || '',
+            gender: s.gender || '',
+            dob: s.dob || '',
+          },
+          cls: {
+            id: cls.id,
+            name: cls.name,
+            classTypeId: cls.classTypeId,
+            classTypeName: type ? type.name : '—',
+            batch: cls.batch || '1st Year',
+            session: cls.session || '',
+          },
+          subjects,
+          marks,
+        };
+      })
+      .filter(Boolean);
+    return { ok: true, matches };
+  }
+
   /* ------------- announcements ------------- */
   async function listAnnouncementsPublic() {
     const db = loadDB();
@@ -999,7 +1069,7 @@ const BackendLocal = (() => {
     listClasses, getClass, addClass, updateClass, deleteClass,
     subjectsForClass, addClassSubject, updateClassSubject, deleteClassSubject,
     listStudents, getStudent, addStudent, updateStudent, deleteStudent, setStudentPin,
-    getMarks, saveMarks,
+    getMarks, saveMarks, publicResultLookup,
     listAnnouncementsPublic, getAnnouncementPublic, listAnnouncementsAdmin,
     createAnnouncement, updateAnnouncement, deleteAnnouncement, setAnnouncementStatus,
     addAnnouncementFile, deleteAnnouncementFile,

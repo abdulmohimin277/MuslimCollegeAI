@@ -46,6 +46,7 @@ supabase login
 supabase link --project-ref <your-project-ref>
 supabase functions deploy admin-login student-login admin-security student-security \
     deploy deploy-webhook admin-data upload bootstrap-admins
+supabase functions deploy public-result --no-verify-jwt
 ```
 
 Edge Functions contain the **only** code that touches credentials — nothing in the
@@ -140,7 +141,9 @@ public **by design**; every admin and student operation is authorized server-sid
 2. *Admin/Security* tab → verify the master account is **greyed out** (not changeable).
 3. *Activity Logs* → you should see `LOGIN_SUCCESS`, `BOOTSTRAP_ADMINS`, etc.
 4. Add a class type → class → subjects → students → marks (see `ADMIN_GUIDE.md`).
-5. Test a **student login** on the Result portal (set a student PIN first).
+5. On the homepage **Result** tab pick a batch (**1st Year** / **Second Year**), enter a
+   student's **roll number** → the result card appears (no login/PIN). Check a roll that
+   belongs to the *other* batch → "No result found".
 
 ---
 
@@ -148,11 +151,14 @@ public **by design**; every admin and student operation is authorized server-sid
 
 ```bash
 # Re-deploy Edge Functions after editing them:
+# public-result is anon-callable → deploy it with --no-verify-jwt
 supabase functions deploy admin-login student-login admin-security student-security \
     deploy deploy-webhook admin-data upload bootstrap-admins
+supabase functions deploy public-result --no-verify-jwt
 
 # Check function logs:
 supabase functions logs admin-login
+supabase functions logs public-result
 
 # SQL editor is your friend for schema changes (always test RLS after changes).
 ```
@@ -165,6 +171,7 @@ supabase functions logs admin-login
 | --- | --- |
 | Admin login says *"Invalid username or password"* | Wrong `ADMIN_USER`/`ADMIN_PASS`, or `bootstrap-admins` not run after secrets changed |
 | `MC_JWT_SECRET is not set` in logs | Secret missing — `supabase secrets set MC_JWT_SECRET=...` then re-deploy functions |
-| Student portal reads fail | Student token missing (PIN not set), or student JWT secret ≠ project JWT secret |
+| Result lookup shows "Lookup could not be completed" | `public-result` not deployed with **`--no-verify-jwt`**, or edge secrets not set; check `supabase functions logs public-result` |
+| Result lookup returns 429 "Too many lookups" | Per-IP limit reached (20/min) — wait a minute and retry; this is intentional anti-scraping |
 | Update Website fails with *"GitHub dispatch failed (401)"* | `GH_PAT` scopes wrong or expired |
 | Deploy status stuck at "running" | GitHub Actions run failed before webhook; check Actions tab, then rollback from dashboard |

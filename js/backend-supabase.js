@@ -535,6 +535,18 @@ const BackendSupabase = (() => {
     return { ok: true, count: clean.length };
   }
 
+  /* --------- public result lookup (batch + roll, no login) ---------
+     The student Result tab asks for a batch (1st Year / Second Year)
+     and a roll number; the public-result edge function (deployed with
+     --no-verify-jwt) returns the card data for every match in ANY
+     class of that batch. Only card fields are returned — never PIN
+     hashes / contact / admission / photos. */
+  async function publicResultLookup(batch, roll) {
+    if (!batch || !roll) return { ok: false, error: 'Choose a batch and enter a roll number.' };
+    const res = await callFn('public-result', { batch: String(batch), roll: String(roll) });
+    return res && res.ok ? res : { ok: false, error: (res && res.error) || 'Lookup failed.' };
+  }
+
   /* ---------------- announcements ---------------- */
   async function listAnnouncementsPublic() {
     const now = new Date().toISOString();
@@ -771,7 +783,7 @@ const BackendSupabase = (() => {
     listClasses, getClass, addClass, updateClass, deleteClass,
     subjectsForClass, addClassSubject, updateClassSubject, deleteClassSubject,
     listStudents, getStudent, addStudent, updateStudent, deleteStudent, setStudentPin,
-    getMarks, saveMarks,
+    getMarks, saveMarks, publicResultLookup,
     listAnnouncementsPublic, getAnnouncementPublic, listAnnouncementsAdmin,
     createAnnouncement, updateAnnouncement, deleteAnnouncement, setAnnouncementStatus,
     addAnnouncementFile, deleteAnnouncementFile,
