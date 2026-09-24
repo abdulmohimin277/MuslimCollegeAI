@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta http-equiv="refresh" content="0;url=index.html#/about" />
+  <title>About — Muslim College Study Agent</title>
+  <script>
+    // Forward legacy about.html#about / #privacy / #terms anchors to SPA routes.
+    (function () {
+      var frag = window.location.hash.replace(/^#/, '');
+      var route = '#/about';
+      if (frag === 'privacy' || frag === 'terms') route += '/' + frag;
+      window.location.replace('index.html' + route);
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting… <a href="index.html#/about">Open the About page</a></p>
+</body>
+</html>

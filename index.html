@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MC Study Agent" />
+  <meta name="description" content="Muslim College AI Study Agent — Gemini powered study assistant for Muslim College students. 100% JavaScript." />
+  <title>Muslim College AI Agent</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="apple-touch-icon" href="assets/logo.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/chat.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+
+  <!-- Toast notifications -->
+  <div id="toast" class="toast" role="status"></div>
+
+  <!-- ===================================================== -->
+  <!-- LOGIN SCREEN — form left, college building right      -->
+  <!-- ===================================================== -->
+  <section id="login-screen" class="screen login-split">
+
+    <!-- ==================== LEFT: FORM ==================== -->
+    <div class="login-split-form">
+
+      <header class="login-brand-row">
+        <div class="brand-logo"><img src="assets/logo.png" alt="Muslim College" onerror="this.style.display='none'" />
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">Muslim College</div>
+          <div class="brand-sub">AI Study Agent</div>
+        </div>
+      </header>
+
+      <form class="login-card" id="login-form" novalidate>
+        <h1 class="login-title">Get Access To Your Study Agent</h1>
+        <p class="login-intro">Enter your name, roll number and Gemini API key to continue.</p>
+
+        <label class="fl-label" for="name-input">Your name</label>
+        <div class="field">
+          <input id="name-input" type="text" placeholder="Enter your name" autocomplete="off" />
+        </div>
+
+        <label class="fl-label" for="roll-input">Roll number</label>
+        <div class="field">
+          <input id="roll-input" type="text" placeholder="Enter your roll number" autocomplete="off" />
+        </div>
+
+        <label class="fl-label" for="api-input">Gemini API key</label>
+        <div class="field key-field">
+          <input id="api-input" type="password" placeholder="Paste your AIza... key" autocomplete="off" />
+          <button id="toggle-key" type="button" class="toggle-key" title="Show / hide key">
+            <svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+
+        <p class="api-hint">
+          No API key?
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Get one free from Google AI
+            Studio</a>
+        </p>
+
+        <button id="login-btn" type="submit" class="btn primary login-submit">Access Study Agent</button>
+      </form>
+
+      <footer class="login-foot">Made for Muslim College students</footer>
+      <div class="login-links">
+        <a href="#/about">About</a>
+      </div>
+    </div>
+
+    <!-- ==================== RIGHT: PHOTO ==================== -->
+    <aside class="login-split-media" role="img" aria-label="Muslim College main building">
+      <img src="assets/CollegeMainBuildingImage.png" alt="" />
+      <div class="login-split-caption">
+        <span class="caption-accent" aria-hidden="true"></span>
+        <p class="caption-line">Your study questions, answered clearly.</p>
+        <p class="caption-sub">Muslim College AI Study Agent</p>
+      </div>
+    </aside>
+
+  </section>
+
+  <!-- ===================================================== -->
+  <!-- DASHBOARD — ChatGPT-style shell (agent + panel views) -->
+  <!-- ===================================================== -->
+  <div id="dashboard" class="screen hidden">
+    <div class="app-shell" id="app-shell">
+
+      <!-- ============ SIDEBAR ============ -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="brand-row">
+            <div class="brand-logo"><img src="assets/logo.png" alt="Muslim College" onerror="this.style.display='none'" /></div>
+            <div class="brand-text">
+              <div class="brand-name">Muslim College</div>
+              <div class="brand-sub">AI Study Agent</div>
+            </div>
+          </div>
+          <a class="new-chat-btn" id="new-chat-btn" href="#/agent?new=1">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>New chat</span>
+          </a>
+        </div>
+
+        <div class="chat-history" id="chat-history" aria-label="Previous chats"></div>
+
+        <nav class="sidebar-nav">
+          <a class="nav-item" data-page="settings" href="#/settings">
+            <span class="nav-icon">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </span>
+            <span>Settings</span>
+          </a>
+          <a class="nav-item" data-page="about" href="#/about">
+            <span class="nav-icon">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </span>
+            <span>About</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button id="install-btn" class="install-btn" type="button">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Install App</span>
+          </button>
+          <div class="user-chip">
+            <div class="user-avatar">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="user-text">
+              <div class="user-name" id="student-name">Student</div>
+              <div class="user-roll" id="student-roll">—</div>
+            </div>
+            <button id="logout-btn" class="logout-mini" type="button" title="Logout">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Tap-away backdrop for the mobile drawer (hidden on desktop) -->
+      <div id="sidebar-backdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+
+      <!-- ============ MAIN AREA ============ -->
+      <main class="chat-main">
+
+        <!-- ============ AI AGENT ============ -->
+        <section id="tab-agent" class="tab-panel">
+          <div class="agent-header">
+            <button id="sidebar-toggle-btn" class="icon-btn ghost sidebar-toggle" type="button" title="Open menu" aria-expanded="false" aria-controls="sidebar">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+
+            <div class="model-wrap">
+              <button id="model-pill-btn" class="model-pill" type="button" title="Active model" aria-haspopup="listbox" aria-expanded="false">
+                <span class="model-dot"><svg class="google-g" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"/></svg></span>
+                <span id="agent-model-label">Gemini</span>
+                <svg class="ic ic-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div id="model-menu" class="model-menu" role="listbox" aria-label="Select model" hidden></div>
+            </div>
+
+            <button id="clear-chat-btn" class="icon-btn ghost" type="button" title="Clear chat">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+
+          <div class="chat-wrap">
+            <div class="chat-scroll">
+              <div id="home" class="home">
+                <p class="home-sub" id="home-sub"></p>
+                <h1 class="home-title" id="home-title">How can I help you today?</h1>
+              </div>
+              <div id="chat-list" class="chat-list"></div>
+            </div>
+
+            <div id="thinking-bar" class="thinking hidden">
+              <span class="spinner"></span>
+              <span>Thinking…</span>
+            </div>
+
+            <div id="pdf-bar" class="pdf-bar hidden">
+              <button id="save-pdf-btn" class="btn outline sm" style="display: none;">Save Last Answer as PDF</button>
+            </div>
+
+            <div class="composer-area">
+              <div class="composer">
+                <textarea id="chat-input" rows="1" placeholder="Message Muslim College Agent..." autocomplete="off"></textarea>
+                <button id="mic-btn" class="round-btn mic-btn" type="button" title="Voice input (speak)">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                </button>
+                <button id="send-btn" class="round-btn send-btn" type="button" title="Send">
+                  <svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 20.4l17.45-7.48a1 1 0 0 0 0-1.84L3.4 3.6a.993.993 0 0 0-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/></svg>
+                </button>
+              </div>
+              <p class="composer-note">Muslim College Agent can make mistakes. Check important info.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ SHARED PANEL TOPBAR (Tools / Admin / Debug) ============ -->
+        <header id="panel-topbar" class="panel-topbar hidden">
+          <button id="panel-toggle-btn" class="icon-btn ghost sidebar-toggle" type="button" title="Open menu" aria-expanded="false" aria-controls="sidebar">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <h2 id="panel-topbar-title"></h2>
+        </header>
+
+        <!-- ============ TOOLS ============ -->
+        <section id="tab-tools" class="tab-panel panel-scroll hidden">
+          <div class="panel-inner">
+            <div class="panel-head">
+              <div class="head-block">
+                <h2>Tools &amp; Settings</h2>
+                <p class="head-sub">Install the app, manage your data and check its status.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Install as an app</h3>
+                  <p class="card-note">Adds a shortcut to your desktop or home screen. The app opens in its own window and works offline after the first load.</p>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button id="shortcut-btn" class="btn primary sm">Install App</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon danger">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Clear local data</h3>
+                  <p class="card-note">Removes your name, roll number, API key, chat history and admin session from this browser. You will need to log in again.</p>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button id="clear-btn" class="btn danger sm">Clear Data</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="bar1" d="M18 20V10"/><path class="bar2" d="M12 20V4"/><path class="bar3" d="M6 20v-6"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>App status</h3>
+                  <p class="card-note">Live summary of the current session.</p>
+                </div>
+              </div>
+              <div class="stat-list">
+                <div class="stat-row"><span>Active Model</span><span id="status-model">—</span></div>
+                <div class="stat-row"><span>Questions Asked</span><span id="status-questions">0</span></div>
+                <div class="stat-row"><span>Logged Student</span><span id="status-student">—</span></div>
+                <div class="stat-row"><span>App Version</span><span>3.0</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ SETTINGS ============ -->
+        <section id="tab-settings" class="tab-panel panel-scroll hidden">
+          <div class="panel-inner">
+            <div class="panel-head">
+              <div class="head-block">
+                <h2>Settings</h2>
+                <p class="head-sub">Manage your study assistant — tools, admin controls and diagnostics.</p>
+              </div>
+            </div>
+
+            <div class="settings-grid">
+
+              <a class="settings-tile" href="#/tools">
+                <div class="tile-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>Tools</h3>
+                  <p class="card-note">Install app, clear local data and view app status.</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
+              <a class="settings-tile" href="#/admin">
+                <div class="tile-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>Admin</h3>
+                  <p class="card-note">Locked admin panel with logs and rotation controls.</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
+              <a class="settings-tile" href="#/debug">
+                <div class="tile-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="6" width="8" height="14" rx="4"/><path d="M19 7l-3 2"/><path d="M5 7l3 2"/><path d="M19 13l-3-2"/><path d="M5 13l3-2"/><path d="M12 6V2"/><path d="M12 10v4"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>Debug</h3>
+                  <p class="card-note">Diagnostics, model list and raw API tester.</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
+              <a class="settings-tile" href="#/about">
+                <div class="tile-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>About</h3>
+                  <p class="card-note">About the Muslim College AI Study Agent.</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ ADMIN ============ -->
+        <section id="tab-admin" class="tab-panel panel-scroll hidden">
+          <div class="panel-inner">
+
+            <!-- Admin Lock Screen -->
+            <div id="admin-lock" class="admin-lock-card">
+              <div class="admin-lock-icon">
+                <svg class="ic ic-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <h2>Admin Panel Locked</h2>
+              <p class="muted">Enter the admin credentials to unlock the control panel.</p>
+
+              <div class="panel-field">
+                <label for="admin-user">Admin username</label>
+                <input id="admin-user" type="text" placeholder="muslim college" autocomplete="off" />
+              </div>
+
+              <div class="panel-field">
+                <label for="admin-pass">Password</label>
+                <div class="field key-field">
+                  <input id="admin-pass" type="password" placeholder="••••••••" autocomplete="off" />
+                  <button id="toggle-admin-pass" type="button" class="toggle-key" title="Show / hide password">
+                    <svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <button id="admin-unlock-btn" class="btn primary">Unlock Panel</button>
+            </div>
+
+            <!-- Admin Panel (visible when unlocked) -->
+            <div id="admin-panel" class="hidden">
+              <div class="panel-head">
+                <div class="head-block">
+                  <h2>Admin Control Panel</h2>
+                  <p class="head-sub">Monitor usage, manage chat logs and test the model pipeline.</p>
+                </div>
+                <div class="admin-badge">
+                  <span class="badge-dot"></span>
+                  <span>Admin Mode</span>
+                  <button id="admin-lock-btn" class="icon-btn ghost" type="button" title="Lock the panel">
+                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-icon">
+                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line class="bar1" x1="18" y1="20" x2="18" y2="10"/><line class="bar2" x1="12" y1="20" x2="12" y2="4"/><line class="bar3" x1="6" y1="20" x2="6" y2="14"/></svg>
+                  </div>
+                  <div class="card-body">
+                    <h3>Overview</h3>
+                    <p class="card-note">Current runtime state of the agent.</p>
+                  </div>
+                </div>
+                <div class="stat-list">
+                  <div class="stat-row"><span>Active Model</span><span id="admin-active-model">—</span></div>
+                  <div class="stat-row"><span>Rotation Status</span><span id="admin-rotation-status">Idle</span></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-icon">
+                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  </div>
+                  <div class="card-body">
+                    <h3>Student activity logs</h3>
+                    <p class="card-note">Record of the questions asked in this session.</p>
+                  </div>
+                </div>
+                <pre id="logs-text">Loading…</pre>
+                <div class="btn-row">
+                  <button id="refresh-logs-btn" class="btn outline sm">Refresh Logs</button>
+                  <button id="admin-clear-logs-btn" class="btn danger sm">Clear Logs</button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-icon">
+                    <svg class="ic ic-rotate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9"/><polyline points="21 3 21 9 15 9"/></svg>
+                  </div>
+                  <div class="card-body">
+                    <h3>Model rotation</h3>
+                    <p class="card-note">
+                      A question automatically retries with the next model whenever one fails.
+                      Use the tests below to check every model on the list and find the fastest working one.
+                    </p>
+                  </div>
+                </div>
+                <div id="admin-rotation-result" class="rotation-result"></div>
+                <div class="btn-row">
+                  <button id="admin-test-rotation-btn" class="btn primary sm">Test All Models</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ DEBUG ============ -->
+        <section id="tab-debug" class="tab-panel panel-scroll hidden">
+          <div class="panel-inner">
+            <div class="panel-head">
+              <div class="head-block">
+                <h2>Debug &amp; Diagnostics</h2>
+                <p class="head-sub">
+                  Test the Gemini connection directly and inspect the raw API response.
+                  This shows whether a failure comes from the API key, the model, the network or the server.
+                </p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Connection test</h3>
+                  <p class="card-note">Send a short request to one Gemini model and inspect the response.</p>
+                </div>
+              </div>
+
+              <div class="panel-field">
+                <label for="debug-key">API key (optional — defaults to your login key)</label>
+                <input id="debug-key" type="text" placeholder="AIza... (leave empty to use your login key)" autocomplete="off" />
+              </div>
+
+              <div class="panel-field">
+                <label for="debug-model">Model</label>
+                <select id="debug-model"></select>
+              </div>
+
+              <div class="btn-row">
+                <button id="test-conn-btn" class="btn primary sm">Test Connection</button>
+                <button id="list-models-btn" class="btn outline sm">List Models</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic ic-rotate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9"/><polyline points="21 3 21 9 15 9"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Rotation testing</h3>
+                  <p class="card-note">Step through the full model list, or dump the raw data of your last chat message.</p>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button id="test-all-models-btn" class="btn primary sm">Test All Models (Rotation)</button>
+                <button id="last-chat-btn" class="btn outline sm">Last Chat Raw</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Raw API response</h3>
+                  <p class="card-note">The exact output received from the Gemini API.</p>
+                </div>
+                <button id="copy-result-btn" class="btn outline sm">Copy Result</button>
+              </div>
+              <pre id="debug-output">Debug results will appear here…</pre>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- ABOUT — public About / Privacy / Terms page          -->
+  <!-- ===================================================== -->
+  <div id="view-about" class="public-page hidden">
+
+    <header class="about-strip">
+      <div class="brand-row">
+        <div class="brand-logo"><img src="assets/logo.png" alt="Muslim College" onerror="this.style.display='none'" /></div>
+        <div class="brand-text">
+          <div class="brand-name">Muslim College</div>
+          <div class="brand-sub">AI Study Agent</div>
+        </div>
+      </div>
+      <a id="about-home-link" class="about-strip-link" href="#/login">
+        Back to App
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </header>
+
+    <main class="about-body">
+
+      <section class="about-hero" id="about">
+        <img class="about-logo" src="assets/logo.png" alt="Muslim Group of Schools &amp; Colleges" onerror="this.style.display='none'" />
+        <span class="about-est">Est. 1 September 1994</span>
+        <h3>Muslim Group of Schools &amp; Colleges</h3>
+        <p class="about-sub">Multan · Pakistan</p>
+        <p class="about-lead">
+          <b>Muslim Group of Schools &amp; Colleges</b> was established on 1 September 1994.
+          Through quality education it has proven its significance and paved the way for progress
+          and prosperity — not only for its students but also for the country. Its highly qualified,
+          devoted and dedicated teaching faculty has striven to decorate the highway of its history
+          with garlands of positions in the Board of Intermediate &amp; Secondary Education, Multan.
+        </p>
+        <p>
+          On 10 October 2000, the institution was affiliated with the Board of Intermediate &amp;
+          Secondary Education, Multan. In 2004 it was granted the status of a Higher Secondary
+          School and, in 2010, promoted to a College. On the strong demand of parents and students,
+          this institution has earned a fine reputation among the government and private schools
+          and colleges of Multan.
+        </p>
+        <blockquote class="about-quote">
+          "These are the well-organised curricular and co-curricular activities of the students,
+          due to which this institution is ranked among the first-class and most result-oriented
+          institutions of the country."
+        </blockquote>
+      </section>
+
+      <section class="about-sec" id="leadership">
+        <h3 class="about-sec-title">Leadership</h3>
+        <div class="leader-grid">
+          <div class="leader-card">
+            <span class="leader-avatar" aria-hidden="true">MT</span>
+            <div>
+              <div class="leader-name">Dr. Muhammad Saleem Tuansvi</div>
+              <div class="leader-role">Director</div>
+              <div class="leader-org">Muslim Group of Schools &amp; Colleges, Multan</div>
+            </div>
+          </div>
+          <div class="leader-card">
+            <span class="leader-avatar" aria-hidden="true">MA</span>
+            <div>
+              <div class="leader-name">Muhammad Naeem Arif</div>
+              <div class="leader-role">Principal</div>
+              <div class="leader-org">Muslim Group of Schools &amp; Colleges, Multan</div>
+            </div>
+          </div>
+          <div class="leader-card">
+            <span class="leader-avatar" aria-hidden="true">IR</span>
+            <div>
+              <div class="leader-name">Imtiaz Rasheed</div>
+              <div class="leader-role">Principal</div>
+              <div class="leader-org">Muslim College of Science &amp; Commerce, Multan</div>
+            </div>
+          </div>
+          <div class="leader-card">
+            <span class="leader-avatar" aria-hidden="true">AR</span>
+            <div>
+              <div class="leader-name">Asif Rasheed</div>
+              <div class="leader-role">Principal</div>
+              <div class="leader-org">Muslim Girls College, New Shah Shamas Colony, Vehari Road, Multan</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-sec" id="campuses">
+        <h3 class="about-sec-title">Our Campuses</h3>
+        <div class="campus-grid">
+          <div class="campus-card">
+            <span class="campus-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div>
+              <div class="campus-name">Muslim College of Science &amp; Commerce</div>
+              <div class="campus-loc">Rasheed Campus, Bahawalpur Road, Multan</div>
+              <div class="campus-ph"><span class="campus-ph-item">061-6356101</span><span class="campus-ph-item">061-6358102</span><span class="campus-ph-item">061-6350103</span><span class="campus-ph-item">0301-8630936</span></div>
+            </div>
+          </div>
+          <div class="campus-card">
+            <span class="campus-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div>
+              <div class="campus-name">Muslim College of Science &amp; Commerce</div>
+              <div class="campus-loc">New Shah Shamas Colony, Vehari Road, Behind Coca-Cola Factory, Multan</div>
+              <div class="campus-ph"><span class="campus-ph-item">+92-61-6525345</span><span class="campus-ph-item">+92-61-6525346</span><span class="campus-ph-item">+92-61-6525347</span></div>
+            </div>
+          </div>
+          <div class="campus-card">
+            <span class="campus-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div>
+              <div class="campus-name">Muslim Public Higher Secondary School</div>
+              <div class="campus-loc">Peoples Colony, Mumtazabad, Multan</div>
+              <div class="campus-ph"><span class="campus-ph-item">061-4332424</span><span class="campus-ph-item">061-8715184</span></div>
+            </div>
+          </div>
+          <div class="campus-card">
+            <span class="campus-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div>
+              <div class="campus-name">Muslim Girls College &amp; Academy</div>
+              <div class="campus-loc">New Shah Shamas Colony, Vehari Road, Multan</div>
+              <div class="campus-ph"><span class="campus-ph-item">061-4233135</span><span class="campus-ph-item">0313-6334723</span></div>
+            </div>
+          </div>
+          <div class="campus-card">
+            <span class="campus-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div>
+              <div class="campus-name">Muslim Public Girls High School</div>
+              <div class="campus-loc">Near Baqarabad Masjid, Al-Falah Market, New Multan</div>
+              <div class="campus-ph"><span class="campus-ph-item">061-4557003</span><span class="campus-ph-item">0300-6400803</span></div>
+            </div>
+          </div>
+          <div class="campus-card">
+            <span class="campus-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div>
+              <div class="campus-name">Muslim Girls High School</div>
+              <div class="campus-loc">Peoples Colony, Mumtazabad, Multan</div>
+              <div class="campus-ph"><span class="campus-ph-item">0300-7093730</span><span class="campus-ph-item">0300-6400805</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-sec" id="contact">
+        <h3 class="about-sec-title">Contact &amp; Information</h3>
+        <div class="contact-grid">
+          <a class="contact-card" href="http://www.mphss.edu.pk" target="_blank" rel="noopener">
+            <span class="contact-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+            <span>
+              <span class="contact-label">Website</span><br />
+              <span class="contact-value">www.mphss.edu.pk</span>
+            </span>
+          </a>
+          <a class="contact-card" href="mailto:muslimclg1@gmail.com">
+            <span class="contact-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+            <span>
+              <span class="contact-label">Email</span><br />
+              <span class="contact-value">muslimclg1@gmail.com</span>
+            </span>
+          </a>
+        </div>
+        <h4 class="about-sub-title">Follow Us</h4>
+        <div class="social-row">
+          <span class="social-chip">YouTube · @muslimcollegemultanMCM</span>
+          <span class="social-chip">Facebook · Muslim Group of Schools &amp; Colleges Multan</span>
+          <span class="social-chip">Instagram · @muslimcollegemultan_MCM</span>
+          <span class="social-chip">TikTok · @muslimcollegemultanMCM</span>
+        </div>
+      </section>
+
+      <p class="legal-foot">
+        Developed by Sahal Ashfaq, Abdul-Mohimin &amp; Haider Ejaz ·
+        Directed by Mr. Anis Rao · Powered by Google Gemini · 2026
+      </p>
+    </main>
+
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/pdf.js"></script>
+  <script src="js/pwa.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/debug.js"></script>
+  <script src="js/pages/login.js"></script>
+  <script src="js/pages/agent.js"></script>
+  <script src="js/pages/tools.js"></script>
+  <script src="js/pages/settings.js"></script>
+  <script src="js/pages/admin.js"></script>
+  <script src="js/pages/debug.js"></script>
+  <script src="js/pages/about.js"></script>
+  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</body>
+</html>

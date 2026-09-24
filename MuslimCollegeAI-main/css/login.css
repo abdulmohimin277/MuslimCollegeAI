@@ -1,0 +1,293 @@
+/* ============================================================
+   Muslim College AI Study Agent — login screen
+   ============================================================ */
+
+/* ============================================================
+LOGIN SCREEN
+============================================================ */
+#login-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #fafafa;
+  overflow-y: auto;
+}
+
+.login-card {
+  zoom: 90%;
+  width: 100%;
+  max-width: 384px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 30px 26px 22px;
+  box-shadow: 0 14px 44px rgba(15, 23, 42, 0.08);
+  text-align: center;
+  animation: fadeUp 0.3s ease both;
+}
+
+.logo-circle {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  border: 1px solid #e0ecff;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-title {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+.brand-sub {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 6px 0 22px;
+}
+
+
+/* ---------- API key helper hint ---------- */
+.api-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.api-hint a {
+  color: var(--primary);
+  text-decoration: none;
+}
+.api-hint a:hover {
+  text-decoration: underline;
+}
+
+.login-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #9ca3af;
+}
+.login-links button,
+.login-links a {
+  margin-top: -35px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-family: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.login-links button:hover,
+.login-links a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+
+/* ============================================================
+   LOGIN — split layout (form left, college photo right)
+   ============================================================ */
+#login-screen.login-split {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* ---------- Left: form column ---------- */
+.login-split-form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(26px, 4.5vw, 56px) clamp(20px, 6vw, 84px);
+  overflow-y: auto;
+  background:
+    radial-gradient(900px 520px at -12% -18%, rgba(37, 99, 235, 0.09), transparent 60%),
+    #fbfdff;
+}
+
+.login-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  align-self: flex-start;
+}
+.login-brand-row .brand-logo {
+  width: 40px;
+  height: 40px;
+}
+.login-brand-row .brand-sub {
+  margin: 2px 0 0;
+}
+
+.login-split-form .login-card {
+  width: 100%;
+  max-width: 400px;
+  margin: auto 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+  animation: none;
+}
+
+.login-title {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  color: var(--text);
+  line-height: 1.15;
+}
+.login-intro {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 8px 0 26px;
+  max-width: 360px;
+}
+
+.fl-label {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.login-split-form .login-card input {
+  margin-bottom: 6px;
+  background: #ffffff;
+  font-size: 14.5px;
+}
+
+.login-split-form .api-hint {
+  justify-content: flex-start;
+  margin: 4px 0 18px;
+}
+.login-submit {
+  width: 100%;
+  margin-top: -10px;
+}
+.login-split-form .login-links {
+  justify-content: flex-start;
+  margin-top: 18px;
+}
+
+.login-foot {
+  margin-top: auto;
+  padding-top: 24px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* ---------- Right: photo column ---------- */
+.login-split-media {
+  position: relative;
+  overflow: hidden;
+  background: #0b1526;
+}
+.login-split-media > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(70%);
+}
+.login-split-media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(11, 21, 38, 0.581), rgba(11, 21, 38, 0.05) 45%, rgba(11, 21, 38, 0) 62%),
+    linear-gradient(0deg, rgba(11, 21, 38, 0.842), rgba(11, 21, 38, 0) 45%);
+}
+
+.login-split-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: clamp(20px, 4vw, 46px);
+  color: #ffffff;
+}
+.caption-accent {
+  display: block;
+  width: 36px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--primary);
+  margin-bottom: 14px;
+}
+.caption-line {
+  font-size: clamp(20px, 2.5vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  line-height: 1.22;
+  max-width: 460px;
+  text-shadow: 0 1px 22px rgba(0, 0, 0, 0.35);
+}
+.caption-sub {
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ---------- Mobile: photo becomes a top band ---------- */
+@media (max-width: 900px) {
+  #login-screen.login-split {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    overflow-y: auto;
+  }
+  .login-split-media {
+    height: 250px;
+  }
+  .login-split-caption {
+    padding: 20px;
+  }
+  .caption-line {
+    font-size: 21px;
+  }
+  .caption-sub {
+    font-size: 12.5px;
+  }
+  .login-split-form {
+    padding: 24px 22px 32px;
+    overflow-y: visible;
+  }
+  .login-brand-row {
+    margin-bottom: 24px;
+  }
+  .login-split-form .login-card {
+    margin: 0;
+  }
+  .login-foot {
+    margin-top: 24px;
+  }
+}
+#api-input {
+  margin-bottom: 30px;
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta http-equiv="refresh" content="0;url=index.html#/agent" />
+  <title>Agent — Muslim College Study Agent</title>
+  <script>
+    // Forward legacy agent.html?chat=... / ?new=1 URLs to the SPA route.
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var hash = '#/agent';
+      var q = [];
+      if (params.get('new') === '1') q.push('new=1');
+      if (params.get('chat')) q.push('chat=' + encodeURIComponent(params.get('chat')));
+      if (q.length) hash += '?' + q.join('&');
+      window.location.replace('index.html' + hash);
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting… <a href="index.html#/agent">Open the AI Agent</a></p>
+</body>
+</html>

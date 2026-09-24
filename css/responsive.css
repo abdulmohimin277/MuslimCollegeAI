@@ -1,0 +1,234 @@
+/* ============================================================
+   Muslim College AI Study Agent — responsive
+   ============================================================ */
+
+/* ============================================================
+   RESPONSIVE — mobile (hamburger sidebar like ChatGPT)
+   ============================================================ */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 70;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-md);
+  }
+  .app-shell.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  /* Dim + block the chat behind the open drawer; tap to close */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 60;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app-shell.sidebar-open .sidebar-backdrop {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ---------- Agent header / model picker ---------- */
+  .chat-wrap {
+    padding: 14px 8px 6px;
+  }
+  .agent-header {
+    padding-right: 58px;
+    padding-left: 58px;
+  }
+  .model-pill {
+    max-width: 100%;
+    font-size: 12.5px;
+    padding: 6px 10px 6px 6px;
+  }
+  /* Keep the dropdown out of the toggle/clear buttons on small screens */
+  .model-menu {
+    min-width: 0;
+    width: max-content;
+    max-width: calc(100vw - 44px);
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
+  .home {
+    padding-bottom: 8px;
+  }
+  #tab-agent.welcome .chat-wrap {
+    padding-bottom: 4vh; /* smaller lift on phones */
+  }
+
+  .chat-list {
+    padding: 14px 12px 4px;
+    gap: 20px;
+  }
+  .bubble {
+    font-size: 14.5px;
+  }
+  .composer-area {
+    padding: 8px 10px 10px;
+  }
+  .composer {
+    border-radius: 22px;
+    padding: 5px 5px 5px 14px;
+  }
+  #chat-input {
+    font-size: 15px;
+  }
+  .composer-note {
+    margin-top: 6px;
+  }
+  .sidebar-toggle {
+    left: 10px;
+  }
+  #clear-chat-btn {
+    right: 10px;
+  }
+
+  /* ---------- Panel pages (Tools / Settings / Admin / Debug) ---------- */
+  .panel-topbar {
+    padding-right: 56px;
+    padding-left: 56px;
+  }
+  .panel-inner {
+    padding: 14px 12px 32px;
+  }
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+  .panel-head {
+    padding: 6px 2px 4px;
+  }
+  .panel-head h2 {
+    font-size: 17px;
+  }
+  .admin-lock-card {
+    padding: 24px 18px;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — About / legal views (independent public screen,
+   still narrows on mobile).
+   ============================================================ */
+@media (max-width: 768px) {
+  .about-strip {
+    padding: 10px 14px;
+  }
+  .about-strip .brand-text .brand-name {
+    font-size: 15px;
+  }
+  .about-strip-link {
+    font-size: 12px;
+    padding: 7px 12px;
+  }
+  .about-hero {
+    padding: 26px 16px 22px;
+  }
+  .about-hero .about-logo {
+    width: 68px;
+    height: 68px;
+  }
+  .campus-grid {
+    grid-template-columns: 1fr;
+  }
+  .panel-inner {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — very small phones (≤ 400px): tighten spacing so
+   nothing scrolls horizontally or crowds the header toggles.
+   ============================================================ */
+@media (max-width: 400px) {
+  .home-title {
+    font-size: 22px;
+  }
+  .agent-header {
+    padding-right: 52px;
+    padding-left: 52px;
+  }
+  .model-pill {
+    font-size: 11.5px;
+    padding: 5px 8px 5px 5px;
+  }
+  .model-menu {
+    max-width: calc(100vw - 24px);
+  }
+  .model-menu .model-opt {
+    font-size: 12px;
+  }
+  .sidebar-toggle {
+    left: 8px;
+    width: 34px;
+    height: 34px;
+  }
+  #clear-chat-btn {
+    right: 8px;
+    width: 34px;
+    height: 34px;
+  }
+  .chat-list {
+    padding: 10px 8px 2px;
+    gap: 16px;
+  }
+  .composer-area {
+    padding: 6px 6px 8px;
+  }
+  .composer {
+    border-radius: 20px;
+    padding: 4px 4px 4px 12px;
+  }
+  .panel-inner {
+    padding: 10px 8px 24px;
+  }
+  .card {
+    padding: 14px;
+    margin: 10px 0;
+  }
+  .btn-row {
+    flex-wrap: wrap;
+  }
+  .about-strip .brand-row {
+    gap: 8px;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — desktop sidebar toggle (ChatGPT-style collapse).
+   The hamburger gets a second job on ≥769px: slide the sidebar
+   out of view. Content snaps full width; toggle stays visible
+   so the sidebar is always one tap away.
+   ============================================================ */
+@media (min-width: 769px) {
+  /* Keep the hamburger/panel toggles visible on desktop */
+  .sidebar-toggle {
+    display: flex;
+  }
+
+  /* Collapsed state — sidebar tucks fully off the flex row */
+  .app-shell.sidebar-collapsed .sidebar {
+    width: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-right-width: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .sidebar {
+    width: 288px;
+    min-width: 288px;
+  }
+}
+

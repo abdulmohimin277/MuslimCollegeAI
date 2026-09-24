@@ -1,0 +1,409 @@
+/* ============================================================
+   Muslim College AI Study Agent — shared components (forms · buttons · modal · toast)
+   ============================================================ */
+
+/* ---------- Inputs ---------- */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 10px;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+::placeholder {
+  color: #9ca3af;
+}
+
+select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.field {
+  position: relative;
+  margin-bottom: 0;
+}
+.key-field input {
+  padding-right: 46px;
+  position: relative;
+}
+.toggle-key {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-95%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 7px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.toggle-key:hover {
+  background: #f1f5f9;
+  color: var(--text);
+}
+.dark-field input {
+  background: #f8fafc;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  border: none;
+  border-radius: 7px;
+  padding: 12px 16px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  color: #fff;
+  font-family: inherit;
+  transition: background 0.15s ease, transform 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn:hover {
+  background: var(--primary-2);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn.primary {
+  background: var(--primary);
+}
+.btn.primary:hover {
+  background: var(--primary-2);
+}
+.btn.green {
+  background: var(--primary);
+}
+.btn.green:hover {
+  background: var(--primary-2);
+}
+.btn.danger {
+  background: var(--danger);
+  margin-top: 8px;
+}
+.btn.danger:hover {
+  background: #172554;
+}
+.btn.outline {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn.outline:hover {
+  background: #f5f5f5;
+}
+.btn.sm {
+  width: auto;
+  padding: 8px 14px;
+  min-height: 36px;
+  font-size: 13px;
+  border-radius: 7px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.btn-row .btn {
+  padding: 11px 8px;
+  font-size: 13px;
+}
+
+.icon-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 7px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.icon-btn:hover {
+  background: #f1f1f1;
+  color: var(--text);
+}
+
+
+/* ============================================================
+   MODAL (About / Privacy / Terms on the login screen)
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(2px);
+}
+.modal-card {
+  background: var(--bg);
+  border-radius: 7px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 84dvh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 50px rgba(15, 23, 42, 0.18);
+  animation: fadeUp 0.25s ease both;
+  overflow: hidden;
+}
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.modal-head h2 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+}
+.modal-body {
+  overflow-y: auto;
+  padding: 6px 20px 20px;
+}
+.modal-body .card {
+  box-shadow: none;
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(130px);
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+  max-width: 92vw;
+  text-align: center;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.toast.success {
+  border-color: rgba(37, 99, 235, 0.6);
+}
+.toast.error {
+  border-color: rgba(30, 58, 138, 0.6);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================
+   ANIMATED ICONS — micro-interactions for the inline SVG icons.
+   Pure CSS, driven by the existing class/state hooks, so no
+   markup rewrite was needed. Every animation honours
+   prefers-reduced-motion.
+   ============================================================ */
+
+/* Smooth default motion on every icon – nothing jarring */
+.ic {
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+/* Icon buttons (hamburger, clear, lock, close …): gentle pop on hover/press */
+.icon-btn:hover .ic {
+  transform: scale(1.14);
+}
+.icon-btn:active .ic {
+  transform: scale(0.9);
+}
+
+/* Sidebar nav items: the icon nudges up + grows on hover */
+.nav-item .nav-icon .ic {
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), color 0.15s;
+}
+.nav-item:hover .nav-icon .ic {
+  transform: translateY(-1px) scale(1.1);
+}
+
+/* Settings tiles: icon tilts playfully on hover */
+.settings-tile .tile-icon .ic {
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.settings-tile:hover .tile-icon .ic {
+  animation: iconTilt 0.45s ease both;
+}
+@keyframes iconTilt {
+  0% { transform: rotate(0deg) scale(1); }
+  35% { transform: rotate(-9deg) scale(1.12); }
+  65% { transform: rotate(7deg) scale(1.12); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+/* Dashboard card icons (tools / admin / debug): subtle bounce-in on stagger */
+#tab-tools .card-icon .ic,
+#tab-settings .card-icon .ic,
+#tab-admin .card-icon .ic,
+#tab-debug .card-icon .ic {
+  animation: iconSettle 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+#tab-tools .card:nth-child(2) .card-icon .ic,
+#tab-settings .card:nth-child(2) .card-icon .ic,
+#tab-admin .card:nth-child(2) .card-icon .ic,
+#tab-debug .card:nth-child(2) .card-icon .ic { animation-delay: 0.06s; }
+#tab-tools .card:nth-child(3) .card-icon .ic,
+#tab-settings .card:nth-child(3) .card-icon .ic,
+#tab-admin .card:nth-child(3) .card-icon .ic,
+#tab-debug .card:nth-child(3) .card-icon .ic { animation-delay: 0.12s; }
+@keyframes iconSettle {
+  0% { transform: scale(0.4); opacity: 0; }
+  70% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Model pill chevron flips when the dropdown opens */
+.model-pill .ic-xs {
+  transition: transform 0.2s ease;
+}
+.model-pill[aria-expanded='true'] .ic-xs {
+  transform: rotate(180deg);
+}
+
+/* Send button: the paper plane glides forward on hover */
+#send-btn:hover .ic {
+  transform: translateX(2px);
+  animation: sendNudge 0.6s ease infinite;
+}
+@keyframes sendNudge {
+  0%, 100% { transform: translateX(2px); }
+  50% { transform: translateX(4px); }
+}
+
+/* Activity "bars" (status / overview charts): staggered rise pulse */
+.ic .bar1,
+.ic .bar2,
+.ic .bar3 {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: barPulse 2.4s ease-in-out infinite;
+}
+.ic .bar1 { animation-delay: 0s; }
+.ic .bar2 { animation-delay: 0.2s; }
+.ic .bar3 { animation-delay: 0.4s; }
+@keyframes barPulse {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.55); }
+}
+
+/* Refresh / retry icons: slow idle spin.
+   Higher specificity so it beats the one-shot iconSettle on card icons. */
+.card-icon .ic-rotate,
+.ic-rotate {
+  animation: spin 4s linear infinite;
+}
+#tab-tools .card-icon .ic-rotate,
+#tab-settings .card-icon .ic-rotate,
+#tab-admin .card-icon .ic-rotate,
+#tab-debug .card-icon .ic-rotate {
+  animation: spin 4s linear infinite;
+}
+
+/* Mic recording pulse (kept from the voice feature) */
+.mic-btn.listening .ic {
+  animation: micPulse 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn:hover .ic,
+  .nav-item:hover .nav-icon .ic,
+  .settings-tile:hover .tile-icon .ic,
+  .model-pill[aria-expanded='true'] .ic-xs,
+  #send-btn:hover .ic,
+  .ic .bar1,
+  .ic .bar2,
+  .ic .bar3,
+  .ic-rotate,
+  #tab-tools .card-icon .ic-rotate,
+  #tab-settings .card-icon .ic-rotate,
+  #tab-admin .card-icon .ic-rotate,
+  #tab-debug .card-icon .ic-rotate {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+

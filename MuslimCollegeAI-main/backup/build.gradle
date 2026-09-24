@@ -1,0 +1,49 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'dev.muslimcollege.agent'
+    compileSdk 36
+    buildToolsVersion '36.0.0'
+
+    defaultConfig {
+        applicationId "dev.muslimcollege.agent"
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// The app shell (web files) is packaged as native assets.
+tasks.register('cleanWebAssets', Delete) {
+    delete fileTree('src/main/assets') {
+        include '**/*'
+    }
+}
+
+tasks.register('syncWebAssets', Copy) {
+    dependsOn cleanWebAssets
+    from rootProject.file('../')
+    include 'index.html'
+    include 'styles.css'
+    include 'app.js'
+    include 'manifest.webmanifest'
+    include 'sw.js'
+    include 'assets/**'
+    into 'src/main/assets/'
+}
+
+preBuild.dependsOn syncWebAssets

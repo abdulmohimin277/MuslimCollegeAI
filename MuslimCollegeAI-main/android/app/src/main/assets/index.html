@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MC Study Agent" />
+  <meta name="description" content="Muslim College AI Study Agent — Gemini powered study assistant for Muslim College students. 100% JavaScript." />
+  <title>Muslim College AI Agent</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="apple-touch-icon" href="assets/logo.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/chat.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+
+  <!-- Toast notifications -->
+  <div id="toast" class="toast" role="status"></div>
+
+  <!-- ===================================================== -->
+  <!-- LOGIN SCREEN — form left, college building right      -->
+  <!-- ===================================================== -->
+  <section id="login-screen" class="screen login-split">
+
+    <!-- ==================== LEFT: FORM ==================== -->
+    <div class="login-split-form">
+
+      <header class="login-brand-row">
+        <div class="brand-logo"><img src="assets/logo.png" alt="Muslim College" onerror="this.style.display='none'" />
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">Muslim College</div>
+          <div class="brand-sub">AI Study Agent</div>
+        </div>
+      </header>
+
+      <form class="login-card" id="login-form" novalidate>
+        <h1 class="login-title">Get Access To Your Study Agent</h1>
+        <p class="login-intro">Enter your name, roll number and Gemini API key to continue.</p>
+
+        <label class="fl-label" for="name-input">Your name</label>
+        <div class="field">
+          <input id="name-input" type="text" placeholder="Enter your name" autocomplete="off" />
+        </div>
+
+        <label class="fl-label" for="roll-input">Roll number</label>
+        <div class="field">
+          <input id="roll-input" type="text" placeholder="Enter your roll number" autocomplete="off" />
+        </div>
+
+        <label class="fl-label" for="api-input">Gemini API key</label>
+        <div class="field key-field">
+          <input id="api-input" type="password" placeholder="Paste your AIza... key" autocomplete="off" />
+          <button id="toggle-key" type="button" class="toggle-key" title="Show / hide key">
+            <svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+
+        <p class="api-hint">
+          No API key?
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Get one free from Google AI
+            Studio</a>
+        </p>
+
+        <button id="login-btn" type="submit" class="btn primary login-submit">Access Study Agent</button>
+      </form>
+
+      <footer class="login-foot">Made for Muslim College students</footer>
+      <div class="login-links">
+        <a href="#/about">About</a>
+        <span aria-hidden="true">·</span>
+        <a href="#/about/privacy">Privacy Policy</a>
+        <span aria-hidden="true">·</span>
+        <a href="#/about/terms">Terms &amp; Conditions</a>
+      </div>
+    </div>
+
+    <!-- ==================== RIGHT: PHOTO ==================== -->
+    <aside class="login-split-media" role="img" aria-label="Muslim College main building">
+      <img src="assets/CollegeMainBuildingImage.png" alt="" />
+      <div class="login-split-caption">
+        <span class="caption-accent" aria-hidden="true"></span>
+        <p class="caption-line">Your study questions, answered clearly.</p>
+        <p class="caption-sub">Muslim College AI Study Agent</p>
+      </div>
+    </aside>
+
+  </section>
+
+  <!-- ===================================================== -->
+  <!-- DASHBOARD — ChatGPT-style shell (agent + panel views) -->
+  <!-- ===================================================== -->
+  <div id="dashboard" class="screen hidden">
+    <div class="app-shell" id="app-shell">
+
+      <!-- ============ SIDEBAR ============ -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="brand-row">
+            <div class="brand-logo"><img src="assets/logo.png" alt="Muslim College" onerror="this.style.display='none'" /></div>
+            <div class="brand-text">
+              <div class="brand-name">Muslim College</div>
+              <div class="brand-sub">AI Study Agent</div>
+            </div>
+          </div>
+          <a class="new-chat-btn" id="new-chat-btn" href="#/agent?new=1">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>New chat</span>
+          </a>
+        </div>
+
+        <div class="chat-history" id="chat-history" aria-label="Previous chats"></div>
+
+        <nav class="sidebar-nav">
+          <a class="nav-item" data-page="settings" href="#/settings">
+            <span class="nav-icon">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </span>
+            <span>Settings</span>
+          </a>
+          <a class="nav-item" data-page="about" href="#/about">
+            <span class="nav-icon">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </span>
+            <span>About</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button id="install-btn" class="install-btn" type="button">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Install App</span>
+          </button>
+          <div class="user-chip">
+            <div class="user-avatar">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="user-text">
+              <div class="user-name" id="student-name">Student</div>
+              <div class="user-roll" id="student-roll">—</div>
+            </div>
+            <button id="logout-btn" class="logout-mini" type="button" title="Logout">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Tap-away backdrop for the mobile drawer (hidden on desktop) -->
+      <div id="sidebar-backdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+
+      <!-- ============ MAIN AREA ============ -->
+      <main class="chat-main">
+
+        <!-- ============ AI AGENT ============ -->
+        <section id="tab-agent" class="tab-panel">
+          <div class="agent-header">
+            <button id="sidebar-toggle-btn" class="icon-btn ghost sidebar-toggle" type="button" title="Open menu" aria-expanded="false" aria-controls="sidebar">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+
+            <div class="model-wrap">
+              <button id="model-pill-btn" class="model-pill" type="button" title="Active model" aria-haspopup="listbox" aria-expanded="false">
+                <span class="model-dot"><svg class="google-g" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"/></svg></span>
+                <span id="agent-model-label">Gemini</span>
+                <svg class="ic ic-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div id="model-menu" class="model-menu" role="listbox" aria-label="Select model" hidden></div>
+            </div>
+
+            <button id="clear-chat-btn" class="icon-btn ghost" type="button" title="Clear chat">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+
+          <div class="chat-wrap">
+            <div class="chat-scroll">
+              <div id="home" class="home">
+                <p class="home-sub" id="home-sub"></p>
+                <h1 class="home-title" id="home-title">How can I help you today?</h1>
+              </div>
+              <div id="chat-list" class="chat-list"></div>
+            </div>
+
+            <div id="thinking-bar" class="thinking hidden">
+              <span class="spinner"></span>
+              <span>Thinking…</span>
+            </div>
+
+            <div id="pdf-bar" class="pdf-bar hidden">
+              <button id="save-pdf-btn" class="btn outline sm" style="display: none;">Save Last Answer as PDF</button>
+            </div>
+
+            <div class="composer-area">
+              <div class="composer">
+                <textarea id="chat-input" rows="1" placeholder="Message Muslim College Agent..." autocomplete="off"></textarea>
+                <button id="mic-btn" class="round-btn mic-btn" type="button" title="Voice input (speak)">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                </button>
+                <button id="send-btn" class="round-btn send-btn" type="button" title="Send">
+                  <svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 20.4l17.45-7.48a1 1 0 0 0 0-1.84L3.4 3.6a.993.993 0 0 0-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/></svg>
+                </button>
+              </div>
+              <p class="composer-note">Muslim College Agent can make mistakes. Check important info.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ SHARED PANEL TOPBAR (Tools / Admin / Debug) ============ -->
+        <header id="panel-topbar" class="panel-topbar hidden">
+          <button id="panel-toggle-btn" class="icon-btn ghost sidebar-toggle" type="button" title="Open menu" aria-expanded="false" aria-controls="sidebar">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <h2 id="panel-topbar-title"></h2>
+        </header>
+
+        <!-- ============ TOOLS ============ -->
+        <section id="tab-tools" class="tab-panel panel-scroll hidden">
+          <div class="panel-inner">
+            <div class="panel-head">
+              <div class="head-block">
+                <h2>Tools &amp; Settings</h2>
+                <p class="head-sub">Install the app, manage your data and check its status.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Install as an app</h3>
+                  <p class="card-note">Adds a shortcut to your desktop or home screen. The app opens in its own window and works offline after the first load.</p>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button id="shortcut-btn" class="btn primary sm">Install App</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon danger">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Clear local data</h3>
+                  <p class="card-note">Removes your name, roll number, API key, chat history and admin session from this browser. You will need to log in again.</p>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button id="clear-btn" class="btn danger sm">Clear Data</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>App status</h3>
+                  <p class="card-note">Live summary of the current session.</p>
+                </div>
+              </div>
+              <div class="stat-list">
+                <div class="stat-row"><span>Active Model</span><span id="status-model">—</span></div>
+                <div class="stat-row"><span>Questions Asked</span><span id="status-questions">0</span></div>
+                <div class="stat-row"><span>Logged Student</span><span id="status-student">—</span></div>
+                <div class="stat-row"><span>App Version</span><span>3.0</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ SETTINGS ============ -->
+        <section id="tab-settings" class="tab-panel panel-scroll hidden">
+          <div class="panel-inner">
+            <div class="panel-head">
+              <div class="head-block">
+                <h2>Settings</h2>
+                <p class="head-sub">Manage your study assistant — tools, admin controls and diagnostics.</p>
+              </div>
+            </div>
+
+            <div class="settings-grid">
+
+              <a class="settings-tile" href="#/tools">
+                <div class="tile-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>Tools</h3>
+                  <p class="card-note">Install app, clear local data and view app status.</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
+              <a class="settings-tile" href="#/admin">
+                <div class="tile-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>Admin</h3>
+                  <p class="card-note">Locked admin panel with logs and rotation controls.</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
+              <a class="settings-tile" href="#/debug">
+                <div class="tile-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="6" width="8" height="14" rx="4"/><path d="M19 7l-3 2"/><path d="M5 7l3 2"/><path d="M19 13l-3-2"/><path d="M5 13l3-2"/><path d="M12 6V2"/><path d="M12 10v4"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>Debug</h3>
+                  <p class="card-note">Diagnostics, model list and raw API tester.</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
+              <a class="settings-tile" href="#/about">
+                <div class="tile-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </div>
+                <div class="tile-body">
+                  <h3>About</h3>
+                  <p class="card-note">About the Muslim College AI Study Agent.</p>
+                </div>
+                <svg class="ic tile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ ADMIN ============ -->
+        <section id="tab-admin" class="tab-panel panel-scroll hidden">
+          <div class="panel-inner">
+
+            <!-- Admin Lock Screen -->
+            <div id="admin-lock" class="admin-lock-card">
+              <div class="admin-lock-icon">
+                <svg class="ic ic-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <h2>Admin Panel Locked</h2>
+              <p class="muted">Enter the admin credentials to unlock the control panel.</p>
+
+              <div class="panel-field">
+                <label for="admin-user">Admin username</label>
+                <input id="admin-user" type="text" placeholder="muslim college" autocomplete="off" />
+              </div>
+
+              <div class="panel-field">
+                <label for="admin-pass">Password</label>
+                <div class="field key-field">
+                  <input id="admin-pass" type="password" placeholder="••••••••" autocomplete="off" />
+                  <button id="toggle-admin-pass" type="button" class="toggle-key" title="Show / hide password">
+                    <svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <button id="admin-unlock-btn" class="btn primary">Unlock Panel</button>
+            </div>
+
+            <!-- Admin Panel (visible when unlocked) -->
+            <div id="admin-panel" class="hidden">
+              <div class="panel-head">
+                <div class="head-block">
+                  <h2>Admin Control Panel</h2>
+                  <p class="head-sub">Monitor usage, manage chat logs and test the model pipeline.</p>
+                </div>
+                <div class="admin-badge">
+                  <span class="badge-dot"></span>
+                  <span>Admin Mode</span>
+                  <button id="admin-lock-btn" class="icon-btn ghost" type="button" title="Lock the panel">
+                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-icon">
+                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  </div>
+                  <div class="card-body">
+                    <h3>Overview</h3>
+                    <p class="card-note">Current runtime state of the agent.</p>
+                  </div>
+                </div>
+                <div class="stat-list">
+                  <div class="stat-row"><span>Active Model</span><span id="admin-active-model">—</span></div>
+                  <div class="stat-row"><span>Rotation Status</span><span id="admin-rotation-status">Idle</span></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-icon">
+                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  </div>
+                  <div class="card-body">
+                    <h3>Student activity logs</h3>
+                    <p class="card-note">Record of the questions asked in this session.</p>
+                  </div>
+                </div>
+                <pre id="logs-text">Loading…</pre>
+                <div class="btn-row">
+                  <button id="refresh-logs-btn" class="btn outline sm">Refresh Logs</button>
+                  <button id="admin-clear-logs-btn" class="btn danger sm">Clear Logs</button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-icon">
+                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9"/><polyline points="21 3 21 9 15 9"/></svg>
+                  </div>
+                  <div class="card-body">
+                    <h3>Model rotation</h3>
+                    <p class="card-note">
+                      A question automatically retries with the next model whenever one fails.
+                      Use the tests below to check every model on the list and find the fastest working one.
+                    </p>
+                  </div>
+                </div>
+                <div id="admin-rotation-result" class="rotation-result"></div>
+                <div class="btn-row">
+                  <button id="admin-test-rotation-btn" class="btn primary sm">Test All Models</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ DEBUG ============ -->
+        <section id="tab-debug" class="tab-panel panel-scroll hidden">
+          <div class="panel-inner">
+            <div class="panel-head">
+              <div class="head-block">
+                <h2>Debug &amp; Diagnostics</h2>
+                <p class="head-sub">
+                  Test the Gemini connection directly and inspect the raw API response.
+                  This shows whether a failure comes from the API key, the model, the network or the server.
+                </p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Connection test</h3>
+                  <p class="card-note">Send a short request to one Gemini model and inspect the response.</p>
+                </div>
+              </div>
+
+              <div class="panel-field">
+                <label for="debug-key">API key (optional — defaults to your login key)</label>
+                <input id="debug-key" type="text" placeholder="AIza... (leave empty to use your login key)" autocomplete="off" />
+              </div>
+
+              <div class="panel-field">
+                <label for="debug-model">Model</label>
+                <select id="debug-model"></select>
+              </div>
+
+              <div class="btn-row">
+                <button id="test-conn-btn" class="btn primary sm">Test Connection</button>
+                <button id="list-models-btn" class="btn outline sm">List Models</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9"/><polyline points="21 3 21 9 15 9"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Rotation testing</h3>
+                  <p class="card-note">Step through the full model list, or dump the raw data of your last chat message.</p>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button id="test-all-models-btn" class="btn primary sm">Test All Models (Rotation)</button>
+                <button id="last-chat-btn" class="btn outline sm">Last Chat Raw</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-icon">
+                  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <div class="card-body">
+                  <h3>Raw API response</h3>
+                  <p class="card-note">The exact output received from the Gemini API.</p>
+                </div>
+                <button id="copy-result-btn" class="btn outline sm">Copy Result</button>
+              </div>
+              <pre id="debug-output">Debug results will appear here…</pre>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- ABOUT — public About / Privacy / Terms page          -->
+  <!-- ===================================================== -->
+  <div id="view-about" class="public-page hidden">
+
+    <header class="about-strip">
+      <div class="brand-row">
+        <div class="brand-logo"><img src="assets/logo.png" alt="Muslim College" onerror="this.style.display='none'" /></div>
+        <div class="brand-text">
+          <div class="brand-name">Muslim College</div>
+          <div class="brand-sub">AI Study Agent</div>
+        </div>
+      </div>
+      <a id="about-home-link" class="about-strip-link" href="#/login">
+        Back to App
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </header>
+
+    <main class="panel-inner legal-content">
+
+      <section class="about-hero" id="about">
+        <img class="about-logo" src="assets/logo.png" alt="Muslim College" onerror="this.style.display='none'" />
+        <h3>Muslim College AI Study Agent</h3>
+        <p>
+          A smart study companion made for <b>Muslim College</b> students,
+          powered by <b>Google Gemini</b> and built as a 100% JavaScript web app.
+          Ask any study or educational question and get clear, well-formatted
+          revision notes — with automatic model rotation, voice input and PDF export.
+        </p>
+        <div class="feature-row">
+          <span class="feature-chip">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            16 Gemini models with auto-rotation
+          </span>
+          <span class="feature-chip">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            Voice input
+          </span>
+          <span class="feature-chip">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Installable app
+          </span>
+          <span class="feature-chip">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            PDF export
+          </span>
+          <span class="feature-chip">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            100% private — no servers
+          </span>
+        </div>
+      </section>
+
+      <section class="card" id="privacy">
+        <h3>Privacy Policy</h3>
+        <p><b>Last updated:</b> September 2026</p>
+        <p>
+          Your privacy matters. This Privacy Policy explains what information the
+          Muslim College AI Study Agent collects and how it is used.
+        </p>
+        <ul class="legal-list">
+          <li><b>What we store:</b> Your name, roll number, and the Gemini API key you enter are saved <b>only in your own browser</b> using local storage. Your conversation history also stays on your device. Nothing is uploaded to any Muslim College server.</li>
+          <li><b>No servers, no tracking:</b> This app runs entirely in your browser. We do not operate accounts, track your activity, or use analytics cookies.</li>
+          <li><b>Google Gemini API:</b> When you ask a question, the question is sent directly to the Google Generative Language API using the API key you provided. Google's privacy policy applies to that request: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">https://policies.google.com/privacy</a></li>
+          <li><b>Voice input:</b> Voice typing uses your browser's built-in Web Speech API and is processed locally by the browser; it is not stored by this app.</li>
+          <li><b>We do not sell or share your data</b> with anyone.</li>
+          <li><b>Deleting your data:</b> Use the "Clear Data" button in the Tools panel, or clear your browser site data / local storage at any time.</li>
+        </ul>
+      </section>
+
+      <section class="card" id="terms">
+        <h3>Terms &amp; Conditions</h3>
+        <p><b>Last updated:</b> September 2026</p>
+        <p>
+          By using the Muslim College AI Study Agent, you agree to the following terms.
+        </p>
+        <ul class="legal-list">
+          <li><b>Purpose:</b> This app provides AI-generated study assistance and revision notes for educational purposes only.</li>
+          <li><b>No guarantee of accuracy:</b> AI answers may contain mistakes. Always verify important information. The app itself shows a reminder that the Agent can make mistakes.</li>
+          <li><b>Your API key:</b> All Gemini requests use the API key you provide. You are responsible for keeping your key private and for any usage or quota costs from your key.</li>
+          <li><b>Availability:</b> The app attempts automatic model rotation when a model fails, but we do not guarantee uninterrupted availability of the Gemini service.</li>
+          <li><b>Acceptable use:</b> Do not misuse the app, spam requests, or use it for anything unlawful. Use it only for personal study.</li>
+          <li><b>Intellectual property:</b> The app design, code and brand belong to its developers (Abdul-Mohimin, Haider Ijaz — directed by Mr. Anis Rao).</li>
+          <li><b>Liability:</b> The app is provided "as is" without warranty of any kind. To the maximum extent permitted by law, the developers are not liable for any damages arising from its use.</li>
+          <li><b>Changes:</b> These terms may be updated from time to time. Continued use means you accept the updated terms.</li>
+        </ul>
+      </section>
+
+      <p class="legal-foot">
+        Muslim College AI Study Agent · Developed by Abdul-Mohimin &amp; Haider Ijaz ·
+        Directed by Mr. Anis Rao · Powered by Google Gemini · 2026
+      </p>
+    </main>
+
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/pdf.js"></script>
+  <script src="js/pwa.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/debug.js"></script>
+  <script src="js/pages/login.js"></script>
+  <script src="js/pages/agent.js"></script>
+  <script src="js/pages/tools.js"></script>
+  <script src="js/pages/settings.js"></script>
+  <script src="js/pages/admin.js"></script>
+  <script src="js/pages/debug.js"></script>
+  <script src="js/pages/about.js"></script>
+  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</body>
+</html>

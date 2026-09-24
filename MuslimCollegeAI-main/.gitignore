@@ -1,0 +1,28 @@
+# =============================================
+# Muslim College AI Study Agent — Pure Web App
+# HTML + CSS + JavaScript (no frameworks)
+# =============================================
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node (only if you add tooling)
+node_modules/
+dist/
+build/
+
+# Local secrets / env
+.env
+.env.local
