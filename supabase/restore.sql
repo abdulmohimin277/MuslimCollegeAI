@@ -42,12 +42,13 @@ begin
     from jsonb_to_recordset(coalesce(data->'class_types', empty))
       as x(id text, name text, created_at timestamptz);
 
-  insert into public.classes (id, name, class_type_id, session, created_at, updated_at)
-    select (x.id)::uuid, x.name, (x.class_type_id)::uuid, x.session,
+  insert into public.classes (id, name, class_type_id, batch, incharge_name, cr_name, session, created_at, updated_at)
+    select (x.id)::uuid, x.name, (x.class_type_id)::uuid, coalesce(x.batch, '1st Year'),
+           x.incharge_name, x.cr_name, x.session,
            coalesce(x.created_at, now()), coalesce(x.updated_at, now())
     from jsonb_to_recordset(coalesce(data->'classes', empty))
-      as x(id text, name text, class_type_id text, session text,
-           created_at timestamptz, updated_at timestamptz);
+      as x(id text, name text, class_type_id text, batch text, incharge_name text,
+           cr_name text, session text, created_at timestamptz, updated_at timestamptz);
 
   insert into public.class_subjects (id, class_id, name, total_marks, passing_marks, sort_order, created_at, updated_at)
     select (x.id)::uuid, (x.class_id)::uuid, x.name,

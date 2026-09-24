@@ -256,58 +256,59 @@ const AdminDashboard = (() => {
      SECURITY — changeable credentials + lock now
      ============================================================ */
   function wireFixedButtons() {
-    const chg = $('#sec-change-btn');
-    if (chg) chg.addEventListener('click', changeCredentials);
+    // Use onclick/onchange assignments (not addEventListener) so calling
+    // renderDashboard() more than once never stacks duplicate handlers.
+    const on = (id, fn) => {
+      const el = $(id);
+      if (el) el.onclick = fn;
+    };
 
-    const lockBtn = $('#sec-lock-now-btn');
-    if (lockBtn) lockBtn.addEventListener('click', lockNow);
-
-    const logoutBtn = $('#adm-logout-btn');
-    if (logoutBtn) logoutBtn.addEventListener('click', lockNow);
-
-    const auditRefresh = $('#audit-refresh-btn');
-    if (auditRefresh) auditRefresh.addEventListener('click', loadAudit);
-
-    const logsRefresh = $('#refresh-logs-btn');
-    if (logsRefresh) logsRefresh.addEventListener('click', refreshLogs);
-    const clearLogs = $('#admin-clear-logs-btn');
-    if (clearLogs) clearLogs.addEventListener('click', () => {
+    on('#sec-change-btn', () => changeCredentials('sec'));
+    on('#set-change-btn', () => changeCredentials('set'));
+    on('#sec-lock-now-btn', lockNow);
+    on('#adm-logout-btn', lockNow);
+    on('#audit-refresh-btn', loadAudit);
+    on('#refresh-logs-btn', refreshLogs);
+    on('#admin-clear-logs-btn', () => {
       clearChat();
       refreshLogs();
       toast('Logs cleared.', 'success');
     });
-
-    const rotBtn = $('#admin-test-rotation-btn');
-    if (rotBtn) rotBtn.addEventListener('click', adminTestRotation);
-
-    const exportBtn = $('#export-data-btn');
-    if (exportBtn) exportBtn.addEventListener('click', exportBackup);
+    on('#admin-test-rotation-btn', adminTestRotation);
+    on('#export-data-btn', exportBackup);
 
     const restoreFile = $('#restore-file-input');
-    const restoreBtn = $('#restore-data-btn');
-    if (restoreBtn) {
-      restoreBtn.addEventListener('click', () => restoreFile && restoreFile.click());
-    }
-    if (restoreFile) restoreFile.addEventListener('change', restoreBackup);
+    on('#restore-data-btn', () => restoreFile && restoreFile.click());
+    if (restoreFile) restoreFile.onchange = restoreBackup;
 
-    const updateBtn = $('#update-site-btn');
-    if (updateBtn) updateBtn.addEventListener('click', requestUpdate);
+    on('#update-site-btn', requestUpdate);
   }
 
-  async function changeCredentials() {
-    const current = $('#sec-current-pass').value;
-    const newUser = $('#sec-new-username').value.trim();
-    const newPass = $('#sec-new-pass').value;
+  /**
+   * Change the changeable admin credentials (server-side, hashed).
+   * prefix selects which card's inputs to use:
+   *   'sec' → Admin/Security card (sec-*)
+   *   'set' → Settings card (set-*)
+   */
+  async function changeCredentials(prefix) {
+    const p = prefix || 'sec';
+    const currentEl = $('#' + p + '-current-pass');
+    const newUserEl = $('#' + p + '-new-username');
+    const newPassEl = $('#' + p + '-new-pass');
+    const btn = $('#' + p + '-change-btn');
+    if (!currentEl || !btn) return;
+    const current = currentEl.value;
+    const newUser = newUserEl ? newUserEl.value.trim() : '';
+    const newPass = newPassEl ? newPassEl.value : '';
     if (!current) return toast('Enter your current password.', 'error');
     if (!newUser && !newPass) return toast('Enter a new username and/or password.', 'error');
-    const btn = $('#sec-change-btn');
     btn.disabled = true;
     try {
       await Backend.adminChangeCredentials(current, newUser || undefined, newPass || undefined);
       toast('Credentials updated.', 'success');
-      $('#sec-current-pass').value = '';
-      $('#sec-new-username').value = '';
-      $('#sec-new-pass').value = '';
+      currentEl.value = '';
+      if (newUserEl) newUserEl.value = '';
+      if (newPassEl) newPassEl.value = '';
       const s = await Backend.adminSessionInfo();
       renderDashboard(s || { username: 'Admin' });
     } catch (e) {

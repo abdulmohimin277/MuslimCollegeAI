@@ -528,3 +528,228 @@
   border-color: #fde68a;
   color: #92400e;
 }
+
+/* ============================================================
+   RESULT — new drill-down flow (topbar, batches, class cards)
+   ============================================================ */
+
+/* ---------- Top bar: roll search + breadcrumb/back nav ---------- */
+.result-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.result-search {
+  position: relative;
+  flex: 1 1 320px;
+  min-width: 240px;
+}
+.result-search .panel-input {
+  width: 100%;
+}
+#result-roll-hits {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.rh-hit {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 13.5px;
+  color: var(--text);
+  cursor: pointer;
+}
+.rh-hit:last-child { border-bottom: 0; }
+.rh-hit:hover { background: #eef2ff; }
+.rh-hit strong { color: var(--primary); margin-right: 6px; }
+.rh-hit .muted { font-size: 12px; }
+.rh-empty {
+  padding: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.result-navbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.result-navbar #result-breadcrumb {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.result-navbar.hidden { display: none; }
+
+/* ---------- Home: batch cards ---------- */
+.result-home { padding-top: 4px; }
+.result-batches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+.batch-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 20px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+.batch-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow);
+}
+.batch-card .bc-icon {
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+}
+.batch-card .bc-info { flex: 1 1 auto; min-width: 0; }
+.batch-card .bc-info strong {
+  display: block;
+  font-size: 17px;
+  color: var(--text);
+}
+.batch-card .bc-info span {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.batch-card .bc-arrow {
+  font-size: 20px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ---------- Batch: class cards ---------- */
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.class-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.class-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow);
+}
+.class-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.class-card .cc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.class-card .cc-head strong { font-size: 15px; }
+.class-card .cc-line {
+  font-size: 13px;
+  color: var(--text);
+  margin-top: 4px;
+}
+.class-card .cc-line span {
+  display: inline-block;
+  min-width: 74px;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.class-card .cc-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #e2e8f0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---------- Subject chips (Add Class modal) ---------- */
+.subj-add-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0;
+}
+.subj-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.subj-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #1e3a8a;
+  border-radius: 999px;
+  padding: 5px 10px 5px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.subj-chip em {
+  font-style: normal;
+  font-weight: 500;
+  color: #6366f1;
+  font-size: 11.5px;
+}
+.subj-chip .chip-x {
+  border: 0;
+  background: none;
+  color: #6366f1;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.subj-chip .chip-x:hover { color: #b91c1c; }

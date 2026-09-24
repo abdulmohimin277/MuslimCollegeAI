@@ -44,6 +44,9 @@ create table if not exists public.classes (
   id            uuid primary key default gen_random_uuid(),
   name          text not null,
   class_type_id uuid not null references public.class_types(id) on delete restrict,
+  batch         text not null default '1st Year',          -- '1st Year' | 'Second Year'
+  incharge_name text,
+  cr_name       text,
   session       text,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now(),
@@ -264,6 +267,15 @@ create trigger trg_audit_ann_files      after insert or update or delete on publ
 
 -- admins are created only by bootstrap-admins / admin-security edge functions
 create trigger trg_audit_admins         after insert or update or delete on public.admins           for each row execute function public.mc_audit_trigger();
+
+-- ------------------------------------------------------------
+-- Upgrade (idempotent) — new Result Manager fields on classes.
+-- Safe to run repeatedly; existing databases pick up the new
+-- columns without recreating the table.
+-- ------------------------------------------------------------
+alter table public.classes add column if not exists batch         text not null default '1st Year';
+alter table public.classes add column if not exists incharge_name text;
+alter table public.classes add column if not exists cr_name       text;
 
 -- ------------------------------------------------------------
 -- STORAGE — announcements bucket (public read, admin write).

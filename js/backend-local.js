@@ -361,6 +361,9 @@ const BackendLocal = (() => {
     const name = str(data.name, 100);
     const classTypeId = str(data.classTypeId, 64);
     const session = str(data.session, 20);
+    const batch = str(data.batch, 20) || '1st Year';
+    const inchargeName = str(data.inchargeName, 120);
+    const crName = str(data.crName, 120);
     if (!name) throw new Error('Class name is required.');
     if (!classTypeId) throw new Error('Class type is required.');
     const id = mut((db) => {
@@ -368,14 +371,14 @@ const BackendLocal = (() => {
         throw new Error('A class with that name and session already exists.');
       }
       const rec = {
-        id: uid('cls_'), name, classTypeId, session,
+        id: uid('cls_'), name, classTypeId, batch, inchargeName, crName, session,
         createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
       };
       db.classes.push(rec);
-      db.auditLogs.unshift(makeAudit('CLASS_CREATED', 'class', rec.id, 'Created class "' + name + '" (' + (session || 'no session') + ')', true));
+      db.auditLogs.unshift(makeAudit('CLASS_CREATED', 'class', rec.id, 'Created class "' + name + '" (' + batch + (session ? ' · ' + session : '') + ')', true));
       return rec.id;
     });
-    return { id, name, classTypeId, session };
+    return { id, name, classTypeId, batch, inchargeName, crName, session };
   }
   async function updateClass(id, data) {
     mut((db) => {
@@ -391,9 +394,12 @@ const BackendLocal = (() => {
       }
       rec.name = name;
       rec.classTypeId = classTypeId;
+      rec.batch = str(data.batch, 20) || rec.batch || '1st Year';
+      if (data.inchargeName !== undefined) rec.inchargeName = str(data.inchargeName, 120);
+      if (data.crName !== undefined) rec.crName = str(data.crName, 120);
       rec.session = session;
       rec.updatedAt = new Date().toISOString();
-      db.auditLogs.unshift(makeAudit('CLASS_UPDATED', 'class', id, 'Updated class "' + name + '" (' + (session || '') + ')', true));
+      db.auditLogs.unshift(makeAudit('CLASS_UPDATED', 'class', id, 'Updated class "' + name + '" (' + rec.batch + (session ? ' · ' + session : '') + ')', true));
     });
     return { ok: true };
   }

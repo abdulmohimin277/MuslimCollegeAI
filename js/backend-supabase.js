@@ -215,6 +215,9 @@ const BackendSupabase = (() => {
       name: r.name,
       classTypeId: r.class_type_id,
       classTypeName: r.class_type_name || '—',
+      batch: r.batch || '1st Year',
+      inchargeName: r.incharge_name || '',
+      crName: r.cr_name || '',
       session: r.session,
       studentCount: r.student_count != null ? r.student_count : 0,
       subjectCount: r.subject_count != null ? r.subject_count : 0,
@@ -349,7 +352,7 @@ const BackendSupabase = (() => {
   async function listClasses() {
     const rows = await rAdminGet('classes', {
       order: 'session.asc,name.asc',
-      select: 'id,name,class_type_id,class_types(name),session,created_at,updated_at,students(count),class_subjects(count)',
+      select: 'id,name,class_type_id,batch,incharge_name,cr_name,class_types(name),session,created_at,updated_at,students(count),class_subjects(count)',
     });
     return (rows || []).map((r) =>
       mapClass({
@@ -363,7 +366,7 @@ const BackendSupabase = (() => {
   async function getClass(id) {
     const rows = await rGet('classes', {
       eq: { id }, limit: 1,
-      select: 'id,name,class_type_id,class_types(name),session,created_at,updated_at,students(count),class_subjects(count)',
+      select: 'id,name,class_type_id,batch,incharge_name,cr_name,class_types(name),session,created_at,updated_at,students(count),class_subjects(count)',
     });
     if (!rows || !rows.length) throw new Error('Class not found.');
     const r = rows[0];
@@ -378,12 +381,19 @@ const BackendSupabase = (() => {
     const rows = await rPost('classes', {
       name: str(data.name, 100),
       class_type_id: data.classTypeId,
+      batch: str(data.batch, 20) || '1st Year',
+      incharge_name: str(data.inchargeName, 120) || null,
+      cr_name: str(data.crName, 120) || null,
       session: str(data.session, 20),
     });
-    return { id: rows[0] ? rows[0].id : null, name: str(data.name, 100), classTypeId: data.classTypeId, session: str(data.session, 20) };
+    return { id: rows[0] ? rows[0].id : null, name: str(data.name, 100), classTypeId: data.classTypeId, batch: str(data.batch, 20) || '1st Year', inchargeName: str(data.inchargeName, 120), crName: str(data.crName, 120), session: str(data.session, 20) };
   }
   async function updateClass(id, data) {
-    await rPatch('classes', id, { name: str(data.name, 100), class_type_id: data.classTypeId, session: str(data.session, 20) });
+    const patch = { name: str(data.name, 100), class_type_id: data.classTypeId, session: str(data.session, 20) };
+    if (data.batch !== undefined) patch.batch = str(data.batch, 20) || '1st Year';
+    if (data.inchargeName !== undefined) patch.incharge_name = str(data.inchargeName, 120) || null;
+    if (data.crName !== undefined) patch.cr_name = str(data.crName, 120) || null;
+    await rPatch('classes', id, patch);
     return { ok: true };
   }
   async function deleteClass(id) {

@@ -24,7 +24,7 @@ Dashboard**.
 | Tab | What's inside |
 | --- | --- |
 | **Overview** | Key stats (classes, students, announcements, deploy status) + quick actions |
-| **Result** | Full management: class types → classes → subjects → students → marks → class result view |
+| **Result** | Drill-down flow: **batch (1st Year / Second Year) → classes → students → marks → results** |
 | **Announcement** | Create/edit/publish announcements with validated file attachments (image/video/document) |
 | **Admin / Security** | Change the **changeable** admin credentials (master is locked); session info |
 | **Activity Logs** | Auto-recorded audit trail (logins, data changes, deploys, exports) |
@@ -36,41 +36,66 @@ Dashboard**.
 
 ## 3. Results — full workflow
 
-**3.1 Class types** (Medical, ICS, Pre Engineering, DIT, I.Com, FA IT, …)
-Result → Class Types → **Add** a type (e.g. "B.Sc"). Rename or delete (delete is blocked
-while classes are attached).
+The Result tab is organised as a **drill-down**:
 
-**3.2 Classes**
-Result → Classes → **Add class** (name + session + type, e.g. "1st Year", "Session 2025–26").
-Duplicates (same name + session) are rejected.
+```
+Result tab
+  ├── 1st Year                    (batch card)
+  │     └── "+ Add New Class"  →  class cards
+  │            └── click a class → class detail (incharge, CR, subjects, students)
+  │                  └── "+ Add New Student" → click "Marks" on a student
+  └── Second Year                 (batch card, same flow)
+  (top search box: enter a student roll no → opens their marks sheet directly)
+```
 
-**3.3 Subjects (per class)**
-Select a class → **Subjects** → add/rename/remove, set **total marks**, **passing marks**,
-and **order**. Example: Physics (Total 75, Passing 26). These drive the marks sheet and
-the pass/fail calculation.
+**3.1 Batches**
+Opening **Result** shows two batch cards: **1st Year** and **Second Year** (with class
+and student counts). Click a batch to open its classes.
 
-**3.4 Students (full profile)**
-Result → Students → **Add / Edit**:
-- Roll number (digits), name, father name, class, session, gender, date of birth,
-  contact, admission info, notes, **photo** (URL).
-- Search by name / father / roll; filter by class & session; sort columns.
+**3.2 Class types** (Medical, ICS, Pre Engineering, DIT, I.Com, FA IT, …)
+From the batch home, use **Manage class types** → add / rename / delete a type. You can
+also create a new type **inside** the Add Class form (choose "+ New class type…"). Delete
+is blocked while classes are attached.
 
-**3.5 Marks entry + auto-calc**
-Open a student → **Marks** → enter obtained marks per subject. The sheet auto-computes:
-- total marks, obtained total, **percentage**, and **Result** (Pass / Fail per subject
-  and overall).
-- Marks are saved per subject (upsert); blank or non-numeric input is clamped.
+**3.3 Add New Class**
+Inside a batch, click **"+ Add New Class"** and fill:
+- **Class name** (e.g. "FSc Pre-Engineering"), **Class type** (or create one on the fly)
+- **Incharge name** (class teacher / incharge)
+- **CR name** (class representative)
+- **Session / Year** (e.g. "2025-2026")
+- **Subjects** — add each subject name with **total marks** and **passing marks**
+  (e.g. Physics, Total 75, Passing 26). These drive the marks sheet and pass/fail
+  calculation. Duplicate class names (same session) are rejected.
 
-**3.6 Class result view**
-Result → **View Class** → table with Sr / Roll / Name / Total / Obtained / % / Result.
-- **Search + sort + filter** by pass/fail, roll, name, obtained range.
-- **Print**, **PDF** (jsPDF; falls back to print dialog offline), **Download CSV**.
+**3.4 Class detail**
+Click a class card to open it: you see its **type, batch, session, incharge, CR** and
+counts, plus buttons for **Edit Class**, **Manage Subjects** (add/rename/remove subjects
+any time), **Class Result** and **Delete Class**. Below is the **student list** with a
+search box for that class.
 
-**3.7 Student portal**
-Set a student's **PIN** (Result → Students → PIN button) — PINs are PBKDF2-hashed
-server-side. The student then logs in on **Result** from the homepage with **roll number
-+PIN** and sees only **their own** result card. Logging in with a roll number alone is
-impossible.
+**3.5 Add New Student**
+In the class detail, click **"+ Add New Student"**: roll number (digits), student name,
+father name, class (pre-set), gender, date of birth, contact, admission info, notes.
+After saving, use the **PIN** button on the student row to set their portal PIN.
+
+**3.6 Marks entry + auto-calc**
+Open a student via the **Marks** button in their row, or type their **roll number** in
+the roll search box at the top of the Result tab. All subjects of the class appear with
+obtained-mark inputs; the sheet auto-computes total, percentage, per-subject pass/fail
+and a running total. **Save Marks** upserts per subject; blank/non-numeric input is
+clamped.
+
+**3.7 Class result view**
+Class detail → **Class Result** → table with Sr / Roll / Name / Total / Obtained / % /
+Result. **Search + sort** by roll / name / percentage, **Print**, **PDF** (jsPDF; falls
+back to the print dialog offline) and **Download CSV**. Click **Result Card** on any row
+for the printable single-student card.
+
+**3.8 Student portal**
+Set a student's **PIN** (class detail → student row → PIN button) — PINs are
+PBKDF2-hashed server-side. The student then logs in on **Result** from the homepage with
+**roll number + PIN** and sees only **their own** result card. Logging in with a roll
+number alone is impossible.
 
 > All destructive actions (delete class/subject/student/announcement/file) show a
 > **confirmation dialog** first.
@@ -163,14 +188,16 @@ Settings tab:
 
 | Task | Where |
 | --- | --- |
-| Add class type | Result → Class Types → Add |
-| Add class | Result → Classes → Add |
-| Configure subjects | Result → Class → Subjects |
-| Add student / set PIN | Result → Students → Add / PIN |
-| Enter marks | Result → Students → Marks |
-| Class result + print/PDF | Result → View Class |
+| Manage class types | Result home → Manage class types |
+| Add class | Batch view → + Add New Class |
+| Configure subjects | Class detail → Manage Subjects |
+| Add student | Class detail → + Add New Student |
+| Set student PIN | Class detail → student row → PIN |
+| Enter marks | Class detail → student row → Marks, **or** top roll-number search |
+| Class result + print/PDF | Class detail → Class Result |
+| Single student result card | Class detail → student row → Result |
 | Announcement | Announcement tab |
-| Change own credentials | Admin/Security |
+| Change own credentials | Admin/Security **or** Settings |
 | Read audit trail | Activity Logs |
 | Backup / restore | Settings |
 | Deploy / history / rollback | Update Website |
